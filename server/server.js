@@ -1,8 +1,22 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import passport from 'passport'
+import cookieSession from 'cookie-session'
 
 const app = express()
+
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: ["somesecretsauce"]
+    })
+);
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 dotenv.config()
 
