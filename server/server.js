@@ -1,8 +1,29 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import passport from 'passport'
+import cookieSession from 'cookie-session'
+import bodyParser from 'body-parser'
+
+import { auth } from './routes/auth.js'
+import { posts } from './routes/posts.js'
 
 const app = express()
+
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: ["somesecretsauce"]
+    })
+);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+// app.use('/', auth)
+// app.use('/', posts)
 
 dotenv.config()
 
