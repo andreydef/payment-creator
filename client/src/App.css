@@ -1,21 +1,19 @@
 body {
     margin-bottom: 100px !important;
-    /*overflow: hidden;*/
 }
 
 img {
     width: 100%;
-
 }
 
 .landing {
-    position: relative;
-    background: url('./assets/showcase.jpeg') no-repeat center;
-    background-size: cover;
-    height: 100vh;
+  position: relative;
+  background: url("./img/showcase.jpg") no-repeat center;
+  background-size: cover;
+  height: 100vh;
 
-    margin-top: -24px;
-    margin-bottom: -50px;
+  margin-top: -24px;
+  margin-bottom: -50px;
 }
 
 .landing-inner {
