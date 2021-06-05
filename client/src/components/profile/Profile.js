@@ -3,6 +3,9 @@ import { connect } from "react-redux"
 
 import { setCurrentUser } from "../../actions/authActions"
 
+// import PayPalPay from '../paypal/PayPalPay'
+import PayPalSubscribe from '../paypal/PayPalSubscribe'
+
 import "./Profile.css"
 
 class Profile extends Component {
@@ -28,6 +31,8 @@ class Profile extends Component {
               <li>Your Email: {this.props.auth.user.email}</li>
               <img className="photo" src={this.props.auth.user.photo} alt="" />
             </ul>
+              {/*<PayPalPay />*/}
+              <PayPalSubscribe />
           </center>
         </div>
       );
