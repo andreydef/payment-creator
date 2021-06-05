@@ -1,7 +1,7 @@
 {
-  "name": "mern-google-auth-blog",
+  "name": "payment-creator",
   "version": "1.0.0",
-  "description": "MERN stack blog app with google auth",
+  "description": "Payment shop application",
   "main": "server.js",
   "scripts": {
     "client-install": "npm install --prefix client",
@@ -10,7 +10,6 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "Soumya Ranjan Mohanty",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
