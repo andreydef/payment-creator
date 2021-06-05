@@ -1,12 +1,11 @@
-import React from "react"
+import React, { Component } from "react"
 import { connect } from "react-redux"
-import { PayPalButton } from 'react-paypal-button-v2'
 
 import { setCurrentUser } from "../../actions/authActions"
 
 import "./Profile.css"
 
-class Profile extends React.Component {
+class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = { profile: [] };
@@ -15,6 +14,7 @@ class Profile extends React.Component {
   async componentDidMount() {
     await this.props.setCurrentUser();
   }
+
   render() {
     if (this.props.auth.isAuthenticated) {
       return (
@@ -28,19 +28,6 @@ class Profile extends React.Component {
               <li>Your Email: {this.props.auth.user.email}</li>
               <img className="photo" src={this.props.auth.user.photo} alt="" />
             </ul>
-              <PayPalButton
-                  amount="0.01"
-                  onSuccess={(details, data) => {
-                      alert("Transaction completed");
-                      // OPTIONAL: Call your server to save the transaction
-                      return fetch("/paypal-transaction-complete", {
-                          method: "post",
-                          body: JSON.stringify({
-                              orderID: data.orderID
-                          })
-                      });
-                  }}
-              />
           </center>
         </div>
       );
