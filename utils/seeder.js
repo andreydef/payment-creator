@@ -1,8 +1,7 @@
 const mongoose = require("mongoose")
-const products = require("../data/products")
 
+const products = require("../data/products")
 const Product = require("../models/Product")
-const Order = require("../models/Order")
 
 const db = require("../config/keys").mongoURI
 mongoose
@@ -31,7 +30,6 @@ const importData = async () => {
 
 const destroyData = async () => {
     try {
-        await Order.deleteMany();
         await Product.deleteMany();
 
         console.log("Data Destroyed!");

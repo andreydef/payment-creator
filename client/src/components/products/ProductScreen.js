@@ -2,11 +2,11 @@ import React,  { useState, useEffect } from "react"
 import axios from "axios"
 
 import { Link } from "react-router-dom";
-import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
+import { Row, Col, Image, ListGroup, Card } from "react-bootstrap";
 import './Products.css'
 
 import PayPalPay from "../paypal/PayPalPay"
-import PayPalSubscribe from "../paypal/PayPalSubscribe"
+// import PayPalSubscribe from "../paypal/PayPalSubscribe"
 
 const ProductScreen = ({ match }) => {
     const [product, setProduct] = useState({});
@@ -60,9 +60,9 @@ const ProductScreen = ({ match }) => {
                             <ListGroup.Item>
                                 <PayPalPay amount={product.price} />
                             </ListGroup.Item>
-                            <ListGroup.Item>
-                                <PayPalSubscribe />
-                            </ListGroup.Item>
+                            {/*<ListGroup.Item>*/}
+                            {/*    <PayPalSubscribe />*/}
+                            {/*</ListGroup.Item>*/}
                         </ListGroup>
                     </Card>
                 </Col>
@@ -70,4 +70,4 @@ const ProductScreen = ({ match }) => {
         </>
     );
 };
-export default ProductScreen;
+export default ProductScreen
