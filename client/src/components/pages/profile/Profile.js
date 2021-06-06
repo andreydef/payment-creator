@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 
-import { setCurrentUser } from "../../actions/authActions"
+import { setCurrentUser } from "../../../actions/authActions"
 
 import "./Profile.css"
 
