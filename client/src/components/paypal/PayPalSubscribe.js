@@ -23,7 +23,7 @@ class PayPalSubscribe extends Component {
         return (
             <div>
                 <PayPalButton
-                    amount="20.0"
+                    amount="10.0"
                     currency="USD"
                     createSubscription={(data, details) => this.paypalSubscribe(data, details)}
                     onApprove={(data, details) => this.paypalOnApprove(data, details)}

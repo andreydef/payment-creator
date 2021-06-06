@@ -31,6 +31,7 @@ app.use(passport.session())
 
 require("./config/passport")
 require("./routes/auth.js")(app)
+require("./routes/product")(app)
 
 const port = process.env.PORT || 5000
 

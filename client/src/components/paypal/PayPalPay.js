@@ -1,18 +1,16 @@
-import React, { Component } from 'react'
+import React  from 'react'
 import { PayPalButton } from "react-paypal-button-v2"
 
 import './PayPal.css'
 
-class PayPalPay extends Component {
-    render() {
+const PayPalPay = ({ amount }) => {
         return (
             <div>
                 <PayPalButton
-                    amount="10.0"
+                    amount={amount}
                     onSuccess={(details, data) => {
                         alert("Transaction completed");
-                        // OPTIONAL: Call your server to save the transaction
-                        return fetch("/paypal-transaction-complete", {
+                        return fetch("/paypal-pay", {
                             method: "post",
                             body: JSON.stringify({
                                 orderID: data.orderID
@@ -22,7 +20,6 @@ class PayPalPay extends Component {
                 />
             </div>
         );
-    }
 }
 
 export default PayPalPay
