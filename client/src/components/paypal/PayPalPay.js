@@ -1,28 +1,39 @@
-import React, { Component } from 'react'
+import React  from 'react'
 import { PayPalButton } from "react-paypal-button-v2"
 
 import './PayPal.css'
 
-class PayPalPay extends Component {
-    render() {
+const PayPalPay = ({ amount }) => {
+    const onSuccessPay = (details, data) => {
+        alert("Transaction completed");
+        return fetch('/api/paypal-pay', {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: data.id
+            })
+        }).then(res => res.json())
+            .then(res => console.log(res));
+
+        // return fetch("/api/paypal-pay", {
+        //     method: "post",
+        //     body: JSON.stringify(data)
+        // }).then((res) => {
+        //     return res.json()
+        // }).then((data) => {
+        //     console.log(data);
+        // });
+    }
         return (
             <div>
                 <PayPalButton
-                    amount="10.0"
-                    onSuccess={(details, data) => {
-                        alert("Transaction completed");
-                        // OPTIONAL: Call your server to save the transaction
-                        return fetch("/paypal-transaction-complete", {
-                            method: "post",
-                            body: JSON.stringify({
-                                orderID: data.orderID
-                            })
-                        });
-                    }}
+                    amount={amount}
+                    onSuccess={onSuccessPay}
                 />
             </div>
         );
-    }
 }
 
 export default PayPalPay

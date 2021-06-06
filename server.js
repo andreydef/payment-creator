@@ -8,7 +8,8 @@ const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-require("./models/User.js")
+require("./models/User")
+require("./models/PayPal")
 
 app.use(
   cookieSession({
@@ -30,7 +31,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 require("./config/passport")
-require("./routes/auth.js")(app)
+require("./routes/auth")(app)
+require("./routes/product")(app)
+require("./routes/paypal")(app)
 
 const port = process.env.PORT || 5000
 
