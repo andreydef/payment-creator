@@ -7,7 +7,8 @@ const products = [
         brand: "Apple",
         category: "Electronics",
         price: 89.99,
-        status: "Active"
+        status: "Active",
+        payment_type: "payment"
     },
     {
         name: "iPhone 11 Pro 256GB Memory",
@@ -17,7 +18,8 @@ const products = [
         brand: "Apple",
         category: "Electronics",
         price: 59.99,
-        status: "Active"
+        status: "Active",
+        payment_type: "subscription"
     },
     {
         name: "Cannon EOS 80D DSLR Camera",
@@ -27,7 +29,8 @@ const products = [
         brand: "Cannon",
         category: "Electronics",
         price: 92.99,
-        status: "Active"
+        status: "Active",
+        payment_type: "subscription"
     },
     {
         name: "Sony Playstation 4 Pro White Version",
@@ -37,7 +40,8 @@ const products = [
         brand: "Sony",
         category: "Electronics",
         price: 39.99,
-        status: "Active"
+        status: "Active",
+        payment_type: "payment"
     },
     {
         name: "Logitech G-Series Gaming Mouse",
@@ -47,7 +51,8 @@ const products = [
         brand: "Logitech",
         category: "Electronics",
         price: 49.99,
-        status: "Active"
+        status: "Active",
+        payment_type: "subscription"
     },
     {
         name: "Amazon Echo Dot 3rd Generation",
@@ -56,8 +61,9 @@ const products = [
             "Meet Echo Dot - Our most popular smart speaker with a fabric design. It is our most compact smart speaker that fits perfectly into small space",
         brand: "Amazon",
         category: "Electronics",
-        price: 29.99,
-        status: "Active"
+        price: 1.99,
+        status: "Active",
+        payment_type: "payment"
     },
 ];
 

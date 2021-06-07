@@ -5,5 +5,6 @@ module.exports = function(app) {
   app.use(proxy("/api/", { target: "http://localhost:5000/" }))
   app.use(proxy("/api/products", { target: "http://localhost:5000/" }))
   app.use(proxy("/api/paypal-pay", { target: "http://localhost:5000/" }))
+  app.use(proxy("/api/paypal-subscribe", { target: "http://localhost:5000/" }))
   app.use(proxy("/profile/", { target: "http://localhost:5000/" }))
 }

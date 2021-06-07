@@ -6,7 +6,7 @@ import { Row, Col, Image, ListGroup, Card } from "react-bootstrap";
 import './Products.css'
 
 import PayPalPay from "../paypal/PayPalPay"
-// import PayPalSubscribe from "../paypal/PayPalSubscribe"
+import PayPalSubscribe from "../paypal/PayPalSubscribe"
 
 const ProductScreen = ({ match }) => {
     const [product, setProduct] = useState({});
@@ -19,9 +19,31 @@ const ProductScreen = ({ match }) => {
         fetchProduct();
     }, [match]);
 
+    function payment() {
+        if (product.payment_type === 'payment') {
+            return (
+                <ListGroup.Item>
+                    <PayPalPay amount={product.price} />
+                </ListGroup.Item>
+            )
+        } else {
+            return (
+                <ListGroup.Item>
+                    <PayPalSubscribe />
+                </ListGroup.Item>
+            )
+        }
+    }
+
+    // const nonAuthorize = (
+    //     <Link className="btn btn-dark my-3" to="/">
+    //         Login
+    //     </Link>
+    // );
+
     return (
         <>
-            <Link className="btn btn-dark my-3" to="/">
+            <Link className="btn btn-dark my-3" to="/products">
                 Go Back
             </Link>
             <Row>
@@ -53,16 +75,19 @@ const ProductScreen = ({ match }) => {
                                     </Col>
                                 </Row>
                             </ListGroup.Item>
+                            <ListGroup.Item>
+                                <Row>
+                                    <Col>Type:</Col>
+                                    <Col>
+                                        {product.payment_type}
+                                    </Col>
+                                </Row>
+                            </ListGroup.Item>
                         </ListGroup>
                     </Card>
                     <Card className="cart">
                         <ListGroup variant="flush">
-                            <ListGroup.Item>
-                                <PayPalPay amount={product.price} />
-                            </ListGroup.Item>
-                            {/*<ListGroup.Item>*/}
-                            {/*    <PayPalSubscribe />*/}
-                            {/*</ListGroup.Item>*/}
+                            { payment() }
                         </ListGroup>
                     </Card>
                 </Col>
@@ -70,4 +95,5 @@ const ProductScreen = ({ match }) => {
         </>
     );
 };
+
 export default ProductScreen

@@ -22,8 +22,8 @@ class Routing extends Component {
                 <Router>
                     <div className="App">
                         <Navbar />
-                        <Route exact path="/" component={Home} />
-                        <Route path="/login" component={Login} />
+                        <Route exact path="/" component={Login} />
+                        <Route path="/products" component={Home} />
                         <Route path="/description" component={Description} />
                         <Route path="/therms" component={Therms} />
                         <Route path="/privacy-policy" component={PrivacyPolicy} />
