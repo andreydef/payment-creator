@@ -6,25 +6,20 @@ import './PayPal.css'
 const PayPalPay = ({ amount }) => {
     const onSuccessPay = (details, data) => {
         alert("Transaction completed");
+
         return fetch('/api/paypal-pay', {
-            method: 'post',
+            method: 'POST',
             headers: {
-                'Content-type': 'application/json'
+                'content-type': 'application/json'
             },
             body: JSON.stringify({
-                id: data.id
+                orderID: data.orderID,
+                status: details.status,
+                payer: details.payer
             })
-        }).then(res => res.json())
-            .then(res => console.log(res));
-
-        // return fetch("/api/paypal-pay", {
-        //     method: "post",
-        //     body: JSON.stringify(data)
-        // }).then((res) => {
-        //     return res.json()
-        // }).then((data) => {
-        //     console.log(data);
-        // });
+        }).then(function(res) {
+            return res.json();
+        }).catch(err => console.log(err))
     }
         return (
             <div>

@@ -8,15 +8,27 @@ class PayPalSubscribe extends Component {
         return actions.subscription.create({
             'plan_id': "P-3H226719GE121945VMC5IQTI",
         });
-    };test
+    };
 
     paypalOnError = (err) => {
         alert('Error')
     }
 
     paypalOnApprove = (data, detail) => {
-        console.log(data)
-        alert('Success')
+        alert("Subscription completed");
+
+        return fetch('/api/paypal-subscribe', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                orderID: data.orderID,
+                subscriptionID: data.subscriptionID
+            })
+        }).then(function(res) {
+            return res.json();
+        }).catch(err => console.log(err))
     };
 
     render() {

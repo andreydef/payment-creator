@@ -9,7 +9,8 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 require("./models/User")
-require("./models/PayPal")
+require("./models/PayPalPay")
+require("./models/PayPalSubscribe")
 
 app.use(
   cookieSession({
