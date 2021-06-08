@@ -30,5 +30,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@stripe/react-stripe-js": "^1.4.1"
+  }
 }

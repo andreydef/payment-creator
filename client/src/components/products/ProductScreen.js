@@ -7,6 +7,12 @@ import './Products.css'
 
 import PayPalPay from "../paypal/PayPalPay"
 import PayPalSubscribe from "../paypal/PayPalSubscribe"
+import StripePay from '../stripe/StripePay'
+
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+
+const stripePromise = loadStripe('pk_test_51IzoTdK5elvk04pSkswtkSVcW7jEq15clMYaorzM8v8sxBBSPF1u8wOs73QCIOhErLReuTYQw1S2bjuQRfKTzwk000m70IkHl1');
 
 const ProductScreen = ({ match }) => {
     const [product, setProduct] = useState({});
@@ -22,9 +28,16 @@ const ProductScreen = ({ match }) => {
     function payment() {
         if (product.payment_type === 'payment') {
             return (
-                <ListGroup.Item>
-                    <PayPalPay amount={product.price} />
-                </ListGroup.Item>
+                <div>
+                    <ListGroup.Item>
+                        <PayPalPay amount={product.price} />
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                        <Elements stripe={stripePromise}>
+                            <StripePay amount={product.price} />
+                        </Elements>
+                    </ListGroup.Item>
+                </div>
             )
         } else {
             return (

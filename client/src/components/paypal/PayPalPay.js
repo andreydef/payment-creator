@@ -10,7 +10,7 @@ const PayPalPay = ({ amount }) => {
         return fetch('/api/paypal-pay', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 orderID: data.orderID,
