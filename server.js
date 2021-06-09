@@ -11,6 +11,8 @@ app.use(bodyParser.json())
 require("./models/User")
 require("./models/PayPalPay")
 require("./models/PayPalSubscribe")
+require("./models/StripePay")
+require("./models/StripeSubscription")
 
 app.use(
   cookieSession({
@@ -35,6 +37,7 @@ require("./config/passport")
 require("./routes/auth")(app)
 require("./routes/product")(app)
 require("./routes/paypal")(app)
+require("./routes/stripe")(app)
 
 const port = process.env.PORT || 5000
 
