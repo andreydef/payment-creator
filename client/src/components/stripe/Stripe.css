@@ -1,0 +1,21 @@
+.root {
+    max-width: 500px;
+    margin: 2vh auto
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+}
+
+.div {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: space-between;
+}
+
+.button {
+    margin: 2rem auto 1rem
+}

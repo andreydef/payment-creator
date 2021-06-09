@@ -12,6 +12,7 @@ require("./models/User")
 require("./models/PayPalPay")
 require("./models/PayPalSubscribe")
 require("./models/StripePay")
+require("./models/StripeSubscription")
 
 app.use(
   cookieSession({

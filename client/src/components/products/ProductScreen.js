@@ -8,6 +8,7 @@ import './Products.css'
 import PayPalPay from "../paypal/PayPalPay"
 import PayPalSubscribe from "../paypal/PayPalSubscribe"
 import StripePay from '../stripe/StripePay'
+import StripeSubscribe from '../stripe/StripeSubscribe'
 
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
@@ -16,6 +17,7 @@ const stripePromise = loadStripe('pk_test_51IzoTdK5elvk04pSkswtkSVcW7jEq15clMYao
 
 const ProductScreen = ({ match }) => {
     const [product, setProduct] = useState({});
+    const [profile, setProfile] = useState({});
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -23,6 +25,12 @@ const ProductScreen = ({ match }) => {
             setProduct(data);
         };
         fetchProduct();
+
+        const fetchProfile = async () => {
+            const { data } = await axios.get(`/api/current_user`);
+            setProfile(data);
+        };
+        fetchProfile();
     }, [match]);
 
     function payment() {
@@ -30,20 +38,27 @@ const ProductScreen = ({ match }) => {
             return (
                 <div>
                     <ListGroup.Item>
-                        <PayPalPay amount={product.price} />
+                        <PayPalPay user={profile.emails} amount={product.price} />
                     </ListGroup.Item>
                     <ListGroup.Item>
                         <Elements stripe={stripePromise}>
-                            <StripePay amount={product.price} />
+                            <StripePay email={profile.email} amount={product.price} />
                         </Elements>
                     </ListGroup.Item>
                 </div>
             )
         } else {
             return (
-                <ListGroup.Item>
-                    <PayPalSubscribe />
-                </ListGroup.Item>
+                <div>
+                    <ListGroup.Item>
+                        <PayPalSubscribe />
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                        <Elements stripe={stripePromise}>
+                            <StripeSubscribe email={profile.email} />
+                        </Elements>
+                    </ListGroup.Item>
+                </div>
             )
         }
     }
