@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { PrivateRoute } from './PrivateRoute'
 
 import Login from "../components/pages/login/Login"
 import Navbar from "../components/layout/navbar/Navbar"
@@ -16,19 +17,26 @@ import ProductScreen from '../components/products/ProductScreen'
 import "../App.css";
 
 class Routing extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: '' }
+    }
+
     render() {
         return (
             <div>
                 <Router>
                     <div className="App">
                         <Navbar />
-                        <Route exact path="/" component={Login} />
-                        <Route path="/products" component={Home} />
-                        <Route path="/description" component={Description} />
-                        <Route path="/therms" component={Therms} />
-                        <Route path="/privacy-policy" component={PrivacyPolicy} />
-                        <Route path="/profile" component={Profile} />
-                        <Route path="/product/:id" component={ProductScreen} />
+                        <Switch>
+                            <Route exact path="/" component={Login} />
+                            <Route path="/description" component={Description} />
+                            <Route path="/therms" component={Therms} />
+                            <Route path="/privacy-policy" component={PrivacyPolicy} />
+                            <Route path="/profile" component={Profile} />
+                            <PrivateRoute path='/products' component={Home} />
+                            <PrivateRoute path="/product/:id" component={ProductScreen} />
+                        </Switch>
                         <Footer />
                     </div>
                 </Router>
