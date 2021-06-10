@@ -38,7 +38,7 @@ const ProductScreen = ({ match }) => {
             return (
                 <div>
                     <ListGroup.Item>
-                        <PayPalPay user={profile.emails} amount={product.price} />
+                        <PayPalPay user={profile.emails} amount={product.price} product={product} />
                     </ListGroup.Item>
                     <ListGroup.Item>
                         <Elements stripe={stripePromise}>
@@ -62,12 +62,6 @@ const ProductScreen = ({ match }) => {
             )
         }
     }
-
-    // const nonAuthorize = (
-    //     <Link className="btn btn-dark my-3" to="/">
-    //         Login
-    //     </Link>
-    // );
 
     return (
         <>
