@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import { PrivateRoute } from './PrivateRoute'
+import PrivateRoute from 'react-private-route'
+import { connect } from 'react-redux'
 
 import Login from "../components/pages/login/Login"
 import Navbar from "../components/layout/navbar/Navbar"
@@ -11,7 +12,6 @@ import Description from '../components/pages/description/Description'
 import PrivacyPolicy from '../components/pages/privacy-policy/PrivacyPolicy'
 import Therms from '../components/pages/therms/Therms'
 import Profile from "../components/pages/profile/Profile"
-
 import ProductScreen from '../components/products/ProductScreen'
 
 import "../App.css";
@@ -19,7 +19,6 @@ import "../App.css";
 class Routing extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: '' }
     }
 
     render() {
@@ -30,12 +29,13 @@ class Routing extends Component {
                         <Navbar />
                         <Switch>
                             <Route exact path="/" component={Login} />
+                            <Route exact path="/login" component={Login} />
                             <Route path="/description" component={Description} />
                             <Route path="/therms" component={Therms} />
                             <Route path="/privacy-policy" component={PrivacyPolicy} />
                             <Route path="/profile" component={Profile} />
-                            <PrivateRoute path='/products' component={Home} />
-                            <PrivateRoute path="/product/:id" component={ProductScreen} />
+                            <PrivateRoute path="/products" component={Home} isAuthenticated={this.props.isAuthenticated} />
+                            <PrivateRoute path="/product/:id" component={ProductScreen} isAuthenticated={this.props.isAuthenticated} />
                         </Switch>
                         <Footer />
                     </div>
@@ -45,4 +45,11 @@ class Routing extends Component {
     }
 }
 
-export default Routing
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+})
+
+export default connect(
+    mapStateToProps,
+    {}
+)(Routing);

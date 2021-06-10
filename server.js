@@ -3,13 +3,11 @@ const mongoose = require("mongoose")
 const passport = require("passport")
 const cookieSession = require("cookie-session")
 const bodyParser = require("body-parser")
-const cookieParser = require('cookie-parser');
 
 const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(cookieParser())
 require("./models/User")
 require("./models/PayPalPay")
 require("./models/PayPalSubscribe")
