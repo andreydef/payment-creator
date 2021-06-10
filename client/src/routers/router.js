@@ -17,10 +17,6 @@ import ProductScreen from '../components/products/ProductScreen'
 import "../App.css";
 
 class Routing extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div>
