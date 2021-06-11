@@ -13,6 +13,7 @@ require("./models/PayPalPay")
 require("./models/PayPalSubscribe")
 require("./models/StripePay")
 require("./models/StripeSubscription")
+require("./models/Orders")
 
 app.use(
   cookieSession({
@@ -40,6 +41,7 @@ require("./routes/auth")(app)
 require("./routes/product")(app)
 require("./routes/paypal")(app)
 require("./routes/stripe")(app)
+require("./routes/orders")(app)
 
 const port = process.env.PORT || 5000
 

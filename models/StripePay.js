@@ -23,6 +23,10 @@ const StripePayPaySchema = new Schema({
         type: String,
         required: true
     },
+    products: [{
+        type: Object,
+        required: true
+    }],
     createdAt: {
         type: Date,
         required: true

@@ -44,7 +44,7 @@ const ProductScreen = ({ match }) => {
                     <ListGroup.Item className='stripe'>
                         <Elements stripe={stripePromise}>
                             <p>Stripe</p>
-                            <StripePay email={profile.email} amount={product.price} />
+                            <StripePay email={profile.email} amount={product.price} product={product} />
                         </Elements>
                     </ListGroup.Item>
                 </div>
@@ -52,12 +52,14 @@ const ProductScreen = ({ match }) => {
         } else {
             return (
                 <div>
-                    <ListGroup.Item>
-                        <PayPalSubscribe />
+                    <ListGroup.Item className='paypal'>
+                        <p>PayPal</p>
+                        <PayPalSubscribe product={product} />
                     </ListGroup.Item>
-                    <ListGroup.Item>
+                    <ListGroup.Item className='stripe'>
+                        <p>Stripe</p>
                         <Elements stripe={stripePromise}>
-                            <StripeSubscribe email={profile.email} />
+                            <StripeSubscribe email={profile.email} product={product} />
                         </Elements>
                     </ListGroup.Item>
                 </div>

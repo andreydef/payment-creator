@@ -13,7 +13,7 @@ import CardInput from './CardInput';
 
 import './Stripe.css'
 
-const StripePay = ({ email, amount }) => {
+const StripePay = ({ email, amount, product }) => {
     const stripe = useStripe()
     const elements = useElements()
 
@@ -42,7 +42,8 @@ const StripePay = ({ email, amount }) => {
                 body: JSON.stringify({
                     payment_method: result.paymentMethod.id,
                     email: email,
-                    amount: amount
+                    amount: amount,
+                    product: product
                 })
             });
             await response.json()

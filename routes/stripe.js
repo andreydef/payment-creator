@@ -39,6 +39,7 @@ module.exports = app => {
             amount: amount,
             email: paymentIntent.receipt_email,
             currency: paymentIntent.currency,
+            products: req.body.product,
             createdAt: Date.now()
         }).save()
            .then((order) => {
@@ -72,11 +73,13 @@ module.exports = app => {
             status: status
         })
 
+        // console.log(subscription.id)
+
         new stripeSubscription({
             id: subscription.id,
             user: req.user,
             customer: subscription.customer,
-            info: subscription.latest_invoice,
+            products: req.body.product,
             createdAt: Date.now()
         }).save()
             .then((order) => {

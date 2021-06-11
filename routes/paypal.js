@@ -1,29 +1,20 @@
 const mongoose = require("mongoose")
 const paypal = mongoose.model("payPalPay")
 const payPalSubscribe = mongoose.model("payPalSubscribe")
-const Product = require("../models/Product")
 
 module.exports = app => {
     app.post("/api/paypal-pay", async (req, res, done) => {
-        // await Product.findOneAndUpdate({ name: req.body.productName },
-        //     { status: 'Pay PayPal' }, { upsert: true, useFindAndModify: false })
-        //     .exec((err, result) => {
-        //         if (err) {
-        //             return res.status(400).json({
-        //                 error: err
-        //             })
-        //         }
-        //         res.send(result)
-        //     })
-
         new paypal({
             orderID: req.body.orderID,
             user: req.user,
             status: req.body.status,
-            payer: req.body.payer
+            payer: req.body.payer,
+            products: req.body.product,
+            createdAt: Date.now()
         }).save()
             .then((order) => {
                 done(null, order)
+                console.log('done paypal')
             })
          }
     )
@@ -32,7 +23,8 @@ module.exports = app => {
         new payPalSubscribe({
             orderID: req.body.orderID,
             subscriptionID: req.body.subscriptionID,
-            user: req.user
+            user: req.user,
+            products: req.body.product
         }).save()
             .then((order) => {
                done(null, order)

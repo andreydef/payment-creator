@@ -18,6 +18,14 @@ const PayPalPaySchema = new Schema({
     payer: {
         type: Object,
         required: true
+    },
+    products: [{
+        type: Object,
+        required: true
+    }],
+    createdAt: {
+        type: Date,
+        required: true
     }
 })
 

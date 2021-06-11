@@ -15,10 +15,10 @@ const StripeSubscriptionPaySchema = new Schema({
         type: String,
         required: true,
     },
-    info: {
-      type: Object,
-      required: true
-    },
+    products: [{
+        type: Object,
+        required: true
+    }],
     createdAt: {
         type: Date,
         required: true

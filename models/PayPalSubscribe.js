@@ -15,6 +15,10 @@ const PayPalSubscribeSchema = new Schema({
         required: true,
         ref: 'users'
     }],
+    products: [{
+        type: Object,
+        required: true
+    }]
 })
 
 module.exports = payPalPay = mongoose.model("payPalSubscribe", PayPalSubscribeSchema)
