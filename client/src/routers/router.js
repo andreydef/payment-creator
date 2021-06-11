@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import PrivateRoute from 'react-private-route'
+import { PrivateRoute } from './PrivateRoute'
 import { connect } from 'react-redux'
 
 import Login from "../components/pages/login/Login"
@@ -25,7 +25,6 @@ class Routing extends Component {
                         <Navbar />
                         <Switch>
                             <Route exact path="/" component={Login} />
-                            <Route exact path="/login" component={Login} />
                             <Route path="/description" component={Description} />
                             <Route path="/therms" component={Therms} />
                             <Route path="/privacy-policy" component={PrivacyPolicy} />

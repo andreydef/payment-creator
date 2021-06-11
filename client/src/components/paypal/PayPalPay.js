@@ -3,7 +3,7 @@ import { PayPalButton } from "react-paypal-button-v2"
 
 import './PayPal.css'
 
-const PayPalPay = ({ amount }) => {
+const PayPalPay = ({ amount, product }) => {
     const onSuccessPay = (details, data) => {
         alert("Transaction completed");
 
@@ -15,7 +15,8 @@ const PayPalPay = ({ amount }) => {
             body: JSON.stringify({
                 orderID: data.orderID,
                 status: details.status,
-                payer: details.payer
+                payer: details.payer,
+                productName: product.name
             })
         }).then(function(res) {
             return res.json();
