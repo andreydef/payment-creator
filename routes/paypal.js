@@ -5,16 +5,16 @@ const Product = require("../models/Product")
 
 module.exports = app => {
     app.post("/api/paypal-pay", async (req, res, done) => {
-        await Product.findOneAndUpdate({ name: req.body.productName },
-            { status: 'Pay PayPal' }, { upsert: true, useFindAndModify: false })
-            .exec((err, result) => {
-                if (err) {
-                    return res.status(400).json({
-                        error: err
-                    })
-                }
-                res.send(result)
-            })
+        // await Product.findOneAndUpdate({ name: req.body.productName },
+        //     { status: 'Pay PayPal' }, { upsert: true, useFindAndModify: false })
+        //     .exec((err, result) => {
+        //         if (err) {
+        //             return res.status(400).json({
+        //                 error: err
+        //             })
+        //         }
+        //         res.send(result)
+        //     })
 
         new paypal({
             orderID: req.body.orderID,

@@ -37,11 +37,13 @@ const ProductScreen = ({ match }) => {
         if (product.payment_type === 'payment') {
             return (
                 <div>
-                    <ListGroup.Item>
+                    <ListGroup.Item className='paypal'>
+                        <p>PayPal</p>
                         <PayPalPay user={profile.emails} amount={product.price} product={product} />
                     </ListGroup.Item>
-                    <ListGroup.Item>
+                    <ListGroup.Item className='stripe'>
                         <Elements stripe={stripePromise}>
+                            <p>Stripe</p>
                             <StripePay email={profile.email} amount={product.price} />
                         </Elements>
                     </ListGroup.Item>
@@ -65,14 +67,14 @@ const ProductScreen = ({ match }) => {
 
     return (
         <>
-            <Link className="btn btn-dark my-3" to="/products">
+            <Link className="btn btn-dark my-3 ml-3" to="/products">
                 Go Back
             </Link>
             <Row>
-                <Col md={6}>
+                <Col md={6} className='image'>
                     <Image src={product.image} alt={product.name} fluid />
                 </Col>
-                <Col md={3}>
+                <Col md={3} className='description'>
                     <ListGroup.Item variant="flush">
                         <h3>{product.name}</h3>
                     </ListGroup.Item>
