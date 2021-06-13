@@ -17,7 +17,7 @@ const products = [
             "Introducing the iPhone 11 Pro. A transformative triple-camera system that adds tons of capability without complexity. An unprecedented leap in battery life",
         brand: "Apple",
         category: "Electronics",
-        price: 59.99,
+        price: 1.00,
         status: "Active",
         payment_type: "subscription"
     },
@@ -28,7 +28,7 @@ const products = [
             "Characterized by versatile imaging specs, the Canon EOS 80D further clarifies itself using a pair of robust focusing systems and an intuitive design",
         brand: "Cannon",
         category: "Electronics",
-        price: 92.99,
+        price: 1.00,
         status: "Active",
         payment_type: "subscription"
     },
@@ -50,7 +50,7 @@ const products = [
             "Get a better handle on your games with this Logitech LIGHTSYNC gaming mouse. The six programmable buttons allow customization for a smooth playing experience",
         brand: "Logitech",
         category: "Electronics",
-        price: 49.99,
+        price: 1.00,
         status: "Active",
         payment_type: "subscription"
     },

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const StripePayPaySchema = new Schema({
+const PaySchema = new Schema({
     id: {
         type: String,
         required: true,
@@ -11,15 +11,31 @@ const StripePayPaySchema = new Schema({
         required: true,
         ref: 'users'
     }],
+    status: {
+        type: String,
+        required: false
+    },
+    payer: {
+        type: Object,
+        required: false
+    },
     amount: {
         type: Number,
-        required: true
+        required: false
     },
     email: {
         type: String,
-        required: true
+        required: false
     },
     currency: {
+        type: String,
+        required: false
+    },
+    products: [{
+        type: Object,
+        required: true
+    }],
+    type: {
         type: String,
         required: true
     },
@@ -29,4 +45,4 @@ const StripePayPaySchema = new Schema({
     }
 })
 
-module.exports = stripePay = mongoose.model("stripePay", StripePayPaySchema)
+module.exports = Pay = mongoose.model("Pay", PaySchema)

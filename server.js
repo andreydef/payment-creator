@@ -9,10 +9,9 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 require("./models/User")
-require("./models/PayPalPay")
-require("./models/PayPalSubscribe")
-require("./models/StripePay")
-require("./models/StripeSubscription")
+require("./models/Pay")
+require("./models/Subscriptions")
+require("./models/Orders")
 
 app.use(
   cookieSession({
@@ -38,8 +37,8 @@ app.use(passport.session())
 require("./config/passport")
 require("./routes/auth")(app)
 require("./routes/product")(app)
-require("./routes/paypal")(app)
-require("./routes/stripe")(app)
+require("./routes/payment")(app)
+require("./routes/orders")(app)
 
 const port = process.env.PORT || 5000
 

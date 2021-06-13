@@ -4,10 +4,27 @@ import { PayPalButton } from "react-paypal-button-v2"
 import './PayPal.css'
 
 const PayPalPay = ({ amount, product }) => {
+
+    const responseOrder = (data) => {
+        return fetch('/api/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                paymentID: data.orderID,
+                product: product,
+                paymentType: 'PayPal'
+            })
+        }).then(function(res) {
+            return res.json();
+        }).catch(err => console.log(err))
+    }
+
     const onSuccessPay = (details, data) => {
         alert("Transaction completed");
 
-        return fetch('/api/paypal-pay', {
+        const resPay = fetch('/api/pay', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -16,11 +33,12 @@ const PayPalPay = ({ amount, product }) => {
                 orderID: data.orderID,
                 status: details.status,
                 payer: details.payer,
-                productName: product.name
+                product: product,
+                type: 'paypal'
             })
-        }).then(function(res) {
-            return res.json();
-        }).catch(err => console.log(err))
+        })
+        responseOrder(data)
+        resPay.json()
     }
         return (
             <div>

@@ -13,9 +13,25 @@ import CardInput from './CardInput';
 
 import './Stripe.css'
 
-const StripePay = ({ email }) => {
+const StripePay = ({ email, product }) => {
     const stripe = useStripe()
     const elements = useElements()
+
+    const responseOrder = (result) => {
+        return fetch('/api/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                paymentID: result.paymentMethod.id,
+                product: product,
+                paymentType: 'Stripe Subscribe',
+            })
+        }).then(function(res) {
+            return res.json();
+        }).catch(err => console.log(err))
+    }
 
     const handleSubmit = async (event) => {
         if (!stripe || !elements) {
@@ -33,16 +49,20 @@ const StripePay = ({ email }) => {
         if (result.error) {
             console.log(result.error.message);
         } else {
-            const response = await fetch('/api/stripe-subscribe', {
+            const response = await fetch('/api/subscribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     payment_method: result.paymentMethod.id,
-                    email: email
+                    email: email,
+                    product: product,
+                    type: 'stripe'
                 })
             });
+            responseOrder(result)
+            response.json()
 
             const { client_secret, status } = response.body;
             if (status === 'requires_action') {
