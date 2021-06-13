@@ -6,6 +6,10 @@ const ordersSchema = mongoose.Schema(
           type: String,
           required: true
         },
+        subscriptionID: {
+            type: String,
+            required: false
+        },
         product: {
             productName: {
                 type: String,
@@ -25,11 +29,11 @@ const ordersSchema = mongoose.Schema(
                 default: 0
             },
         },
-        user: [{
+        user: {
             type: Object,
             required: true,
             ref: 'users'
-        }],
+        },
         paymentType: {
             type: String,
             required: true

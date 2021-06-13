@@ -5,7 +5,7 @@ export const PrivateRoute = ({ component: Component, isAuthenticated, ...rest })
     return (
         <Route
             {...rest}
-            render={props =>
+            render={props => (
                 isAuthenticated ? (
                     <Component {...props} />
                 ) : (
@@ -16,7 +16,7 @@ export const PrivateRoute = ({ component: Component, isAuthenticated, ...rest })
                         }}
                     />
                 )
-            }
+            )}
         />
     )
 }
