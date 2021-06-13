@@ -23,7 +23,7 @@ const PayPalSubscribe = ({ product }) => {
             body: JSON.stringify({
                 paymentID: data.orderID,
                 product: product,
-                paymentType: 'PayPal Subscribe'
+                paymentType: 'PayPal Subscribe',
             })
         }).then(function(res) {
             return res.json();
@@ -33,7 +33,7 @@ const PayPalSubscribe = ({ product }) => {
     const paypalOnApprove = (data, detail) => {
         alert("Subscription completed");
 
-        const resPay = fetch('/api/paypal-subscribe', {
+        const resPay = fetch('/api/subscribe', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -41,7 +41,8 @@ const PayPalSubscribe = ({ product }) => {
             body: JSON.stringify({
                 orderID: data.orderID,
                 subscriptionID: data.subscriptionID,
-                product: product
+                product: product,
+                type: 'paypal'
             })
         })
         responseOrder(data)
@@ -56,6 +57,7 @@ const PayPalSubscribe = ({ product }) => {
                 createSubscription={(data, details) => paypalSubscribe(data, details)}
                 onApprove={(data, details) => paypalOnApprove(data, details)}
                 options={{
+                    // clientID of profile, which have active subscription
                     clientId: 'AZRtameGwLo6f_zKc73fnXRoR8zZX-dFzlHci18FIXRUlMY2rtdpZVPnXyYx5QhMDcZ0sE9tjDuDKSRR',
                     vault:true
                 }}

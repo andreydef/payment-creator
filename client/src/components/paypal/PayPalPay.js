@@ -24,7 +24,7 @@ const PayPalPay = ({ amount, product }) => {
     const onSuccessPay = (details, data) => {
         alert("Transaction completed");
 
-        const resPay = fetch('/api/paypal-pay', {
+        const resPay = fetch('/api/pay', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,7 +33,8 @@ const PayPalPay = ({ amount, product }) => {
                 orderID: data.orderID,
                 status: details.status,
                 payer: details.payer,
-                product: product
+                product: product,
+                type: 'paypal'
             })
         })
         responseOrder(data)

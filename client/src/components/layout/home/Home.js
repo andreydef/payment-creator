@@ -1,7 +1,7 @@
 import React,  { useState, useEffect } from 'react'
 import axios from "axios";
 
-import {Row, Col } from 'react-bootstrap'
+import { Row, Col } from 'react-bootstrap'
 import './Home.css'
 
 import Products from '../../products/Products'

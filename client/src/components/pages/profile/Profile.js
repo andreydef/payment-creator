@@ -2,22 +2,32 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import { setCurrentUser } from "../../../actions/authActions"
-import { setUserOrders } from '../../../actions/ordersActions'
 
 import "./Profile.css"
 
 class Profile extends Component {
   constructor(props) {
     super(props);
-    this.state = { profile: [] };
+    this.state = {
+        profile: [],
+        orders: []
+    }
   }
 
   async componentDidMount() {
     await this.props.setCurrentUser();
-    await this.props.setUserOrders();
+
+    fetch('/api/orders')
+      .then(res => res.json())
+      .then(result => {
+         this.setState({ orders: result })
+          console.log(result)
+      })
   }
 
   render() {
+    const { orders } = this.state;
+
     if (this.props.auth.isAuthenticated) {
       return (
         <div className="jumbotron">
@@ -30,62 +40,44 @@ class Profile extends Component {
               <li>Your Name: {this.props.auth.user.name}</li>
               <li>Your Email: {this.props.auth.user.email}</li>
             </ul>
-            <table>
-              <tr>
-                <th>Name</th>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Payment type</th>
-                <th>Payment amount</th>
-                <th>Created at</th>
-              </tr>
-              <tr>
-                <td>{this.props.orders.productName}</td>
-                <td>{this.props.orders.productBrand}</td>
-                <td>{this.props.orders.productCategory}</td>
-                <td>{this.props.orders.price}</td>
-                <td>{this.props.orders.payment_type}</td>
-                <td>{this.props.orders.paymentAmount}</td>
-                <td>{this.props.orders.createdAt}</td>
-              </tr>
-            </table>
-            {/*{ this.props.orders === {} ?  (*/}
-            {/*    <table>*/}
-            {/*      <tr>*/}
-            {/*        <th>Name</th>*/}
-            {/*        <th>Brand</th>*/}
-            {/*        <th>Category</th>*/}
-            {/*        <th>Price</th>*/}
-            {/*        <th>Payment type</th>*/}
-            {/*        <th>Payment amount</th>*/}
-            {/*        <th>Created at</th>*/}
-            {/*      </tr>*/}
-            {/*      <tr>*/}
-            {/*        <td>{this.props.orders.productName}</td>*/}
-            {/*        <td>{this.props.orders.productBrand}</td>*/}
-            {/*        <td>{this.props.orders.productCategory}</td>*/}
-            {/*        <td>{this.props.orders.price}</td>*/}
-            {/*        <td>{this.props.orders.payment_type}</td>*/}
-            {/*        <td>{this.props.orders.paymentAmount}</td>*/}
-            {/*        <td>{this.props.orders.createdAt}</td>*/}
-            {/*      </tr>*/}
-            {/*    </table>*/}
-            {/*) : <p>You not have orders</p>*/}
-            {/*}*/}
+              <h2>Orders</h2>
+              <table key={orders.paymentID}>
+                  <tbody>
+                  <tr>
+                      <th>Name</th>
+                      <th>Brand</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Payment type</th>
+                      <th>Created at</th>
+                  </tr>
+                  { orders ? (
+                      orders.map(orders => (
+                          <tr>
+                              <td>{orders.product.productName}</td>
+                              <td>{orders.product.productBrand}</td>
+                              <td>{orders.product.productCategory}</td>
+                              <td>{orders.paymentAmount}</td>
+                              <td>{orders.paymentType}</td>
+                              <td>{orders.createdAt}</td>
+                          </tr>
+                      ))
+                  ) :  <p>You don't have orders</p> }
+                  </tbody>
+              </table>
+
           </center>
         </div>
       );
-    } else return <div>Loading...</div>;
+    } else return <div>You are not logged!</div>;
   }
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
-  orders: state.orders.orders
+  auth: state.auth
 });
 
 export default connect(
   mapStateToProps,
-  { setCurrentUser, setUserOrders }
+  { setCurrentUser }
 )(Profile);

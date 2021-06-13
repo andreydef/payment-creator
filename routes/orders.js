@@ -21,18 +21,15 @@ module.exports = app => {
         }).save()
            .then((order) => {
                 done(null, order)
-                console.log('done orders')
            })
         }
     )
-
     app.get("/api/orders",
         asyncHandler(async (req, res) => {
             const orders = await Orders.find({});
             res.json(orders);
         })
     )
-
     app.get("/api/orders/:id",
         asyncHandler(async (req, res) => {
             const orders = await Orders.findById(req.params.id);
