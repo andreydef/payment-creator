@@ -99,8 +99,7 @@ module.exports = app => {
 
             res.send({
                 client_secret: client_secret.client_secret,
-                status: status,
-                subscriptionID: subscription.id
+                status: status
             })
 
             new subscriptions({

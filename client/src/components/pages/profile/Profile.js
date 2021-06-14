@@ -28,7 +28,17 @@ class Profile extends Component {
     const { orders } = this.state;
 
     function sendDeleteStripe() {
-
+        // return fetch('/api/subscribe', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         type: 'delete'
+        //     })
+        // }).then(function(res) {
+        //     return res.json();
+        // }).catch(err => console.log(err))
     }
 
     function getSubscribeButton(orders) {
@@ -59,28 +69,15 @@ class Profile extends Component {
     function getUserOrders(orders, user) {
         if (orders.user === user.toString()) {
             return (
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Name</th>
-                        <th>Brand</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Payment type</th>
-                        <th>Created at</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr key={orders.paymentID}>
-                        <td>{orders.product.productName}</td>
-                        <td>{orders.product.productBrand}</td>
-                        <td>{orders.product.productCategory}</td>
-                        <td>{orders.paymentAmount}</td>
-                        <td>{orders.paymentType}</td>
-                        <td>{orders.createdAt}</td>
-                        { getSubscribeButton(orders) }
-                    </tr>
-                    </tbody>
-                </table>
+                <tr key={orders.paymentID}>
+                    <td>{orders.product.productName}</td>
+                    <td>{orders.product.productBrand}</td>
+                    <td>{orders.product.productCategory}</td>
+                    <td>{orders.paymentAmount}</td>
+                    <td>{orders.paymentType}</td>
+                    <td>{orders.createdAt}</td>
+                    { getSubscribeButton(orders) }
+                </tr>
             )
         }
     }
@@ -98,26 +95,30 @@ class Profile extends Component {
               <li>Your Email: {this.props.auth.user.email}</li>
             </ul>
               <h2>Orders</h2>
-              { orders ? (
-                  orders.map(orders => (
-                      <div>
-                          { getUserOrders(orders, this.props.auth.user._id) }
-                      </div>
-                  ))
-              ) : <p>You don't have orders</p> }
+              <table>
+                  <tbody>
+                  <tr>
+                      <th>Name</th>
+                      <th>Brand</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Payment type</th>
+                      <th>Created at</th>
+                      <th>Status</th>
+                  </tr>
+                  { orders ? (
+                      orders.map(orders => (
+                          <>
+                              { getUserOrders(orders, this.props.auth.user._id) }
+                          </>
+                      ))
+                  ) : <p>You don't have orders</p> }
+                  </tbody>
+              </table>
           </center>
         </div>
       );
-    } else {
-        return (
-            <center>
-                <h2>
-                    Please, login <br />
-                    <a href='/'>Login</a>
-                </h2>
-            </center>
-        )
-    }
+    } else return <p>Loading...</p>
   }
 }
 

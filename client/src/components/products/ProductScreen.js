@@ -12,6 +12,7 @@ import StripeSubscribe from '../stripe/StripeSubscribe'
 
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
+import Loader from "react-loader-spinner"
 
 const stripePromise = loadStripe('pk_test_51IzoTdK5elvk04pSkswtkSVcW7jEq15clMYaorzM8v8sxBBSPF1u8wOs73QCIOhErLReuTYQw1S2bjuQRfKTzwk000m70IkHl1');
 
@@ -49,7 +50,7 @@ const ProductScreen = ({ match }) => {
                     </ListGroup.Item>
                 </div>
             )
-        } else {
+        } else if (product.payment_type === 'subscription') {
             return (
                 <div>
                     <ListGroup.Item className='paypal'>
@@ -63,6 +64,15 @@ const ProductScreen = ({ match }) => {
                         </Elements>
                     </ListGroup.Item>
                 </div>
+            )
+        } else {
+            return (
+                <Loader
+                    type="Rings"
+                    color="#00BFFF"
+                    height={100}
+                    width={100}
+                />
             )
         }
     }
