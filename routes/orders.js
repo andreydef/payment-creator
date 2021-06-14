@@ -7,6 +7,7 @@ module.exports = app => {
     app.post("/api/create-order", async (req, res, done) => {
         new orders({
            paymentID: req.body.paymentID,
+           subscriptionID: req.body.subscriptionID,
            product: {
                productName: req.body.product.name,
                productBrand: req.body.product.brand,

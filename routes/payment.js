@@ -65,7 +65,7 @@ module.exports = app => {
     })
 
     app.post("/api/subscribe", async (req, res, done) => {
-        const { email, payment_method } = req.body;
+        const { user_email, payment_method } = req.body;
 
         if (req.body.type === 'paypal') {
             new subscriptions({
@@ -82,7 +82,7 @@ module.exports = app => {
         } else {
             const customer = await stripe.customers.create({
                 payment_method: payment_method,
-                email: email,
+                email: user_email,
                 invoice_settings: {
                     default_payment_method: payment_method,
                 },
@@ -99,7 +99,8 @@ module.exports = app => {
 
             res.send({
                 client_secret: client_secret.client_secret,
-                status: status
+                status: status,
+                subscriptionID: subscription.id
             })
 
             new subscriptions({
