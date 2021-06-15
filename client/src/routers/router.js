@@ -19,19 +19,8 @@ import { setCurrentUser } from "../actions/authActions";
 import { PrivateRoute } from './PrivateRoute'
 
 class Routing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLogin: false
-        }
-    }
-
     async componentDidMount() {
         await this.props.setCurrentUser()
-
-        if (this.props.isAuthenticated === false) {
-            this.setState({ isLogin: true })
-        }
     }
 
     render() {
@@ -40,26 +29,25 @@ class Routing extends Component {
                 <Router>
                     <div className="App">
                         <Navbar />
-
+                        <Switch>
                             <Route exact path="/" component={Login} />
                             <Route path="/description" component={Description} />
                             <Route path="/therms" component={Therms} />
                             <Route path="/privacy-policy" component={PrivacyPolicy} />
                             <Route path="/profile" component={Profile} />
-                        <Switch>
                             <PrivateRoute
                                 exact
                                 path="/products"
                                 component={Home}
                                 isAuthenticated={this.props.isAuthenticated}
-                                isLogin={this.state.isLogin}
+                                isLogin={this.props.isLogin}
                             />
                             <PrivateRoute
                                 exact
                                 path="/product/:id"
                                 component={ProductScreen}
                                 isAuthenticated={this.props.isAuthenticated}
-                                isLogin={this.state.isLogin}
+                                isLogin={this.props.isLogin}
                             />
                         </Switch>
                         <Footer />
@@ -71,7 +59,7 @@ class Routing extends Component {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth,
+    isLogin: state.auth.isLogin,
     isAuthenticated: state.auth.isAuthenticated
 })
 
