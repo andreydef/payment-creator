@@ -34,7 +34,13 @@ class Routing extends Component {
                             <Route path="/description" component={Description} />
                             <Route path="/therms" component={Therms} />
                             <Route path="/privacy-policy" component={PrivacyPolicy} />
-                            <Route path="/profile" component={Profile} />
+                            <PrivateRoute
+                                exact
+                                path="/profile"
+                                component={Profile}
+                                isAuthenticated={this.props.isAuthenticated}
+                                isLogin={this.props.isLogin}
+                            />
                             <PrivateRoute
                                 exact
                                 path="/products"

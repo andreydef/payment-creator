@@ -31,12 +31,13 @@ module.exports = app => {
             res.json(orders);
         })
     )
-    app.get("/api/orders/:id",
-        asyncHandler(async (req, res) => {
-            const orders = await Orders.findById(req.params.id);
 
-            if (orders) res.json(orders);
-            else res.status(404).json({ message: "Order not found" });
-        })
-    )
+    app.get("/api/orders/:id", async (req, res) => {
+        const orders = await Orders.findOne({
+            user: mongoose.Types.ObjectId(req.params.id)
+        });
+
+        if (orders) res.json(orders);
+        else res.status(404).json({ message: "Order not found" });
+    })
 }

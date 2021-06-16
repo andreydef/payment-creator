@@ -17,23 +17,6 @@ const StripeSubscribe = ({ email, product }) => {
     const stripe = useStripe()
     const elements = useElements()
 
-    const responseOrder = (result, subscriptionID) => {
-        return fetch('/api/create-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                paymentID: result.paymentMethod.id,
-                product: product,
-                paymentType: 'Stripe Subscribe',
-                subscriptionID: subscriptionID
-            })
-        }).then(function(res) {
-            return res.json();
-        }).catch(err => console.log(err))
-    }
-
     const handleSubmit = async (event) => {
         if (!stripe || !elements) {
             return;
@@ -56,15 +39,14 @@ const StripeSubscribe = ({ email, product }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    paymentID: result.paymentMethod.id,
+                    paymentType: 'Stripe Subscribe',
                     payment_method: result.paymentMethod.id,
                     user_email: email,
                     product: product,
                     type: 'stripe'
                 })
             });
-            const { subscriptionID  } = response.body;
-
-            responseOrder(result, subscriptionID)
             response.json()
 
             const { client_secret, status  } = response.body;

@@ -10,7 +10,9 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        orders: []
+        orders: [],
+        subscriptionID: '',
+        paymentId: '',
     }
   }
 
@@ -20,25 +22,36 @@ class Profile extends Component {
     fetch('/api/orders')
       .then(res => res.json())
       .then(result => {
-         this.setState({ orders: result })
+         this.setState({ orders: result, paymentId: result.paymentID })
       })
+
+      fetch(`/api/orders/${this.props.auth.user._id}`)
+          .then(res => res.json())
+          .then(result => {
+              console.log(result.subscriptionID)
+              console.log(this.props.auth.user._id)
+              console.log(result)
+              this.setState({ subscriptionID: result.subscriptionID })
+          })
   }
 
   render() {
     const { orders } = this.state;
+    const { subscriptionID } = this.state;
 
-    function sendDeleteStripe() {
-        // return fetch('/api/subscribe', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         type: 'delete'
-        //     })
-        // }).then(function(res) {
-        //     return res.json();
-        // }).catch(err => console.log(err))
+    const sendDeleteStripe = async (orders) => {
+        alert('Cancel subscribe')
+
+        return await fetch(`/api/subscribe/${this.state.subscriptionID}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                subscriptionID: subscriptionID,
+                paymentID: orders.paymentID
+            })
+        })
     }
 
     function getSubscribeButton(orders) {
