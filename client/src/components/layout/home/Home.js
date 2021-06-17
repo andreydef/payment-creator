@@ -1,4 +1,4 @@
-import React,  { Component } from 'react'
+import React, { Component } from 'react'
 
 import { Row, Col } from 'react-bootstrap'
 import './Home.css'
@@ -32,11 +32,11 @@ class Home extends Component {
             <>
                 <h1 className='product'>Products</h1>
                 <Row>
-                    { products.map((product) => (
+                    {products ? products.map((product) => (
                         <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                             <Products product={product} />
                         </Col>
-                    ))}
+                    )) : <p>You don't have products!</p> }
                 </Row>
             </>
         );

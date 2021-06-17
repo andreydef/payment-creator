@@ -9,59 +9,63 @@ module.exports = app => {
     app.post("/api/pay", async (req, res, done) => {
         const { email, amount, payment_method } = req.body
 
-        if (req.body.type === 'paypal') {
-            new pay({
-                id: req.body.orderID,
-                user: req.user,
-                status: req.body.status,
-                payer: req.body.payer,
-                products: req.body.product,
-                type: req.body.type,
-                createdAt: Date.now()
-            }).save()
-                .then((order) => {
-                    done(null, order)
+        if (req.isAuthenticated()) {
+            if (req.body.type === 'paypal') {
+                new pay({
+                    id: req.body.orderID,
+                    user: req.user,
+                    status: req.body.status,
+                    payer: req.body.payer,
+                    products: req.body.product,
+                    type: req.body.type,
+                    createdAt: Date.now()
+                }).save()
+                    .then((order) => {
+                        done(null, order)
+                    })
+            } else {
+                let stringAmount = amount.toString()
+                let numberAmount = parseFloat(stringAmount.replace('.', ''))
+
+                const customer = await stripe.customers.create({
+                    payment_method: payment_method,
+                    email: email,
+                    invoice_settings: {
+                        default_payment_method: payment_method
+                    },
+                });
+
+                const paymentIntent = await stripe.paymentIntents.create({
+                    customer: customer.id,
+                    payment_method: payment_method,
+                    amount: numberAmount,
+                    currency: 'usd',
+                    metadata: {integration_check: 'accept_a_payment'},
+                    receipt_email: email
                 })
+
+                await stripe.paymentIntents.confirm(
+                    paymentIntent.id,
+                    { payment_method: 'pm_card_visa' }
+                )
+                res.send({ client_secret: paymentIntent.client_secret })
+
+                new pay({
+                    id: req.body.payment_method,
+                    user: req.user,
+                    amount: amount,
+                    email: paymentIntent.receipt_email,
+                    currency: paymentIntent.currency,
+                    products: req.body.product,
+                    type: req.body.type,
+                    createdAt: Date.now()
+                }).save()
+                    .then((order) => {
+                        done(null, order)
+                    })
+            }
         } else {
-            let stringAmount = amount.toString()
-            let numberAmount = parseFloat(stringAmount.replace('.', ''))
-
-            const customer = await stripe.customers.create({
-                payment_method: payment_method,
-                email: email,
-                invoice_settings: {
-                    default_payment_method: payment_method
-                },
-            });
-
-            const paymentIntent = await stripe.paymentIntents.create({
-                customer: customer.id,
-                payment_method: payment_method,
-                amount: numberAmount,
-                currency: 'usd',
-                metadata: {integration_check: 'accept_a_payment'},
-                receipt_email: email
-            })
-
-            await stripe.paymentIntents.confirm(
-                paymentIntent.id,
-                { payment_method: 'pm_card_visa' }
-            )
-            res.send({ client_secret: paymentIntent.client_secret })
-
-            new pay({
-                id: req.body.payment_method,
-                user: req.user,
-                amount: amount,
-                email: paymentIntent.receipt_email,
-                currency: paymentIntent.currency,
-                products: req.body.product,
-                type: req.body.type,
-                createdAt: Date.now()
-            }).save()
-                .then((order) => {
-                    done(null, order)
-                })
+            res.sendStatus(403)
         }
     })
 
@@ -137,24 +141,36 @@ module.exports = app => {
         }
     })
 
-    app.delete("/api/subscribe/:id", async (req, res, done) => {
-        if (req.params.id === '') {
-            alert('This subscription is cancelled or subscriptionID not found')
-            res.status(404).send({ message: 'SubscriptionID not found!' })
-        }
-
-        try {
-            if (req.params.id) {
-                await stripe.subscriptions.update(req.params.id, {
-                    cancel_at_period_end: true
+    app.delete("/api/subscribe/:id", async (req, res) => {
+        if (req.isAuthenticated()) {
+            if (!!req.params.id)
+            {
+                orders.findOne({ paymentID: req.params.id }, async (err, data) => {
+                    if (err) {
+                        res.status(403).send({ message: err })
+                    } else {
+                        if (req.user.id === data.user.toString())
+                        {
+                            try {
+                                await stripe.subscriptions.update(data.subscriptionID, {
+                                    cancel_at_period_end: true
+                                })
+                                res.status(201).send({ message: 'You successfully delete a subscription!' })
+                            } catch (err) {
+                                console.log(err)
+                                res.status(500).send({ message: err })
+                            }
+                        } else {
+                            console.log('Users dont match!')
+                            res.status(403).json({ message: 'Users dont match!' })
+                        }
+                    }
                 })
-
-                orders.updateOne({
-                    subscriptionID: req.params.id
-                }, { $unset: { subscriptionID: '' } })
+            } else {
+                res.status(404).send({ message: 'PaymentID not found!' })
             }
-        } catch (err) {
-            console.log(err)
+        } else {
+            res.sendStatus(403)
         }
     })
 }

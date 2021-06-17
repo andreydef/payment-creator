@@ -10,9 +10,7 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        orders: [],
-        subscriptionID: '',
-        paymentId: '',
+        orders: []
     }
   }
 
@@ -22,49 +20,34 @@ class Profile extends Component {
     fetch('/api/orders')
       .then(res => res.json())
       .then(result => {
-         this.setState({ orders: result, paymentId: result.paymentID })
+         this.setState({ orders: result })
       })
-
-      fetch(`/api/orders/${this.props.auth.user._id}`)
-          .then(res => res.json())
-          .then(result => {
-              console.log(result.subscriptionID)
-              console.log(this.props.auth.user._id)
-              console.log(result)
-              this.setState({ subscriptionID: result.subscriptionID })
-          })
   }
 
   render() {
     const { orders } = this.state;
-    const { subscriptionID } = this.state;
 
-    const sendDeleteStripe = async (orders) => {
+    const sendDeleteStripe = async (paymentID) => {
         alert('Cancel subscribe')
-
-        return await fetch(`/api/subscribe/${this.state.subscriptionID}`, {
+        return await fetch(`/api/subscribe/${paymentID}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                subscriptionID: subscriptionID,
-                paymentID: orders.paymentID
-            })
+            }
         })
     }
 
-    function getSubscribeButton(orders) {
-        if (orders.paymentType === 'Stripe Subscribe')
+    const getSubscribeButton = (order) => {
+        if (order.paymentType === 'Stripe Subscribe')
         {
             return (
                 <td>
-                    <Button variant="contained" color="primary" className='button' onClick={sendDeleteStripe}>
+                    <Button variant="contained" color="primary" className='button' onClick={() => sendDeleteStripe(order.paymentID)}>
                         Delete Stripe Subscribe
                     </Button>
                 </td>
             )
-        } else if (orders.paymentType === 'PayPal Subscribe') {
+        } else if (order.paymentType === 'PayPal Subscribe') {
             return (
                 <td>
                     <Button variant="contained" color="primary" className='button'>
@@ -75,22 +58,6 @@ class Profile extends Component {
         } else {
             return (
                 <td>Payment</td>
-            )
-        }
-    }
-
-    function getUserOrders(orders, user) {
-        if (orders.user === user.toString()) {
-            return (
-                <tr key={orders.paymentID}>
-                    <td>{orders.product.productName}</td>
-                    <td>{orders.product.productBrand}</td>
-                    <td>{orders.product.productCategory}</td>
-                    <td>{orders.paymentAmount}</td>
-                    <td>{orders.paymentType}</td>
-                    <td>{orders.createdAt}</td>
-                    { getSubscribeButton(orders) }
-                </tr>
             )
         }
     }
@@ -119,10 +86,18 @@ class Profile extends Component {
                       <th>Created at</th>
                       <th>Status</th>
                   </tr>
-                  { orders ? (
-                      orders.map(orders => (
+                  { orders !== [] ? (
+                      orders.map(order => (
                           <>
-                              { getUserOrders(orders, this.props.auth.user._id) }
+                              <tr key={order.paymentID}>
+                                  <td>{order.product.productName}</td>
+                                  <td>{order.product.productBrand}</td>
+                                  <td>{order.product.productCategory}</td>
+                                  <td>{order.paymentAmount}</td>
+                                  <td>{order.paymentType}</td>
+                                  <td>{order.createdAt}</td>
+                                  { getSubscribeButton(order) }
+                              </tr>
                           </>
                       ))
                   ) : <p>You don't have orders</p> }

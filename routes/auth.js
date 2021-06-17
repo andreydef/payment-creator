@@ -1,9 +1,16 @@
 const passport = require("passport")
 
 module.exports = app => {
-  app.get(
-    "/auth/google",
-    passport.authenticate("google", {
+  app.get('/', (req, res) => {
+    if (req.isAuthenticated()) {
+      res.redirect("/profile")
+    } else {
+      res.redirect("/")
+    }
+  })
+
+  app.get("/auth/google",
+      passport.authenticate("google", {
       scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email"
@@ -11,20 +18,27 @@ module.exports = app => {
     })
   )
 
-  app.get(
-    "/auth/google/callback",
-    passport.authenticate("google"),
+  app.get("/auth/google/callback",
+      passport.authenticate("google"),
     (req, res) => {
-      res.redirect("/profile")
+      if (req.isAuthenticated()) {
+        res.redirect("/profile")
+      } else {
+        res.redirect("/")
+      }
     }
   )
 
   app.get("/api/logout", (req, res) => {
     req.logout()
-    res.redirect("/");
+    res.redirect("/")
   })
 
   app.get("/api/current_user", (req, res) => {
-    res.send(req.user);
+    if (req.isAuthenticated()) {
+      res.send(req.user);
+    } else {
+      res.sendStatus(403)
+    }
   })
 }
