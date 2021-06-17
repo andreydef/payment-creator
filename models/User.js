@@ -15,7 +15,13 @@ const UserSchema = new Schema({
     required: true,
     default:
       "https://res.cloudinary.com/geekysrm/image/upload/v1542221619/default-user.png"
-  }
+  },
+  orders: [{
+    type: Object,
+    required: true,
+    default: [],
+    ref: 'orders'
+  }]
 })
 
 module.exports = User = mongoose.model("users", UserSchema)

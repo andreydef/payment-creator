@@ -90,7 +90,11 @@ class Profile extends Component {
                       orders.map(order => (
                           <>
                               <tr key={order.paymentID}>
-                                  <td>{order.product.productName}</td>
+                                  <td>
+                                      <a href={`/product/${order.product.productID}`}>
+                                          {order.product.productName}
+                                      </a>
+                                  </td>
                                   <td>{order.product.productBrand}</td>
                                   <td>{order.product.productCategory}</td>
                                   <td>{order.paymentAmount}</td>

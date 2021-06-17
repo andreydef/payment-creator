@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
 const orders = mongoose.model("Orders")
@@ -124,6 +125,7 @@ module.exports = app => {
                 paymentID: req.body.paymentID,
                 subscriptionID: subscription.id,
                 product: {
+                    productID: req.body.product._id,
                     productName: req.body.product.name,
                     productBrand: req.body.product.brand,
                     productCategory: req.body.product.category,

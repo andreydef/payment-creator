@@ -11,6 +11,10 @@ const ordersSchema = mongoose.Schema(
             required: false
         },
         product: {
+            productID: {
+                type: String,
+                required: true
+            },
             productName: {
                 type: String,
                 required: true
