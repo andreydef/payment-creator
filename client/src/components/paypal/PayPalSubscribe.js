@@ -11,7 +11,7 @@ const PayPalSubscribe = ({ product }) => {
     };
 
     const paypalOnError = (err) => {
-        console.log('Error')
+        console.log(err)
     }
 
     const responseOrder = (data) => {
@@ -22,6 +22,7 @@ const PayPalSubscribe = ({ product }) => {
             },
             body: JSON.stringify({
                 paymentID: data.orderID,
+                subscriptionID: data.subscriptionID,
                 product: product,
                 paymentType: 'PayPal Subscribe',
             })

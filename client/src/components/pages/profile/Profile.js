@@ -5,12 +5,17 @@ import { setCurrentUser } from "../../../actions/authActions"
 
 import "./Profile.css"
 import Button from "@material-ui/core/Button";
+import axios from "axios";
+
+const clientIdAndSecret = "AZRtameGwLo6f_zKc73fnXRoR8zZX-dFzlHci18FIXRUlMY2rtdpZVPnXyYx5QhMDcZ0sE9tjDuDKSRR:EFNN_2R8YDxUuo2z-OufYMB1B2VTFRoAaWwIRh9Nc16yeQnRxMz16P-RF5gb0ZIxcfofzXY9T3qKMfsM";
+const base64 = Buffer.from(clientIdAndSecret).toString('base64')
 
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        orders: []
+        orders: [],
+        subscriptionID: ''
     }
   }
 
@@ -22,10 +27,16 @@ class Profile extends Component {
       .then(result => {
          this.setState({ orders: result })
       })
+
+      fetch('/api/subscribe/cancel')
+          .then(res => res.json())
+          .then(result => {
+              this.setState({ subscriptionID: result.subscriptionID })
+          })
   }
 
   render() {
-    const { orders } = this.state;
+    const { orders, subscriptionID } = this.state;
 
     const sendDeleteStripe = async (paymentID) => {
         alert('Cancel subscribe')
@@ -35,6 +46,47 @@ class Profile extends Component {
                 'Content-Type': 'application/json'
             }
         })
+    }
+
+    const sendDeletePayPal = (order) => {
+        fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Accept-Language': 'en_US',
+                'Authorization': `Basic ${base64}`,
+            },
+            body: 'grant_type=client_credentials'
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            axios({
+                url: `https://api-m.sandbox.paypal.com/v1/billing/subscriptions/${subscriptionID}/cancel`,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${data.access_token}`
+                },
+                data: {
+                    "reason": "Cancel product subscription"
+                }
+            }).then(res => {
+                console.log(`Axios Call completed: ${res}`)
+                alert('This subscribe is deleted')
+
+                return fetch(`/api/paypal-subscribe/${order}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function(res) {
+                    return res.json();
+                }).catch(err => console.log(err))
+            })
+        }).catch(function() {
+            console.log("couldn't get auth token");
+        });
     }
 
     const getSubscribeButton = (order) => {
@@ -50,10 +102,14 @@ class Profile extends Component {
         } else if (order.paymentType === 'PayPal Subscribe') {
             return (
                 <td>
-                    <Button variant="contained" color="primary" className='button'>
+                    <Button variant="contained" color="primary" className='button' onClick={() => sendDeletePayPal(order.product.productID)}>
                         Delete Paypal Subscribe
                     </Button>
                 </td>
+            )
+        } else if (order.paymentType === 'Cancel subscription') {
+            return (
+                <td>Cancel subscription</td>
             )
         } else {
             return (

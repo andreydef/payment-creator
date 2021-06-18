@@ -3,10 +3,24 @@ const mongoose = require("mongoose")
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
 const orders = mongoose.model("Orders")
+const Product = mongoose.model("product")
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
 module.exports = app => {
+    app.get("/api/subscribe/cancel", async (req, res) => {
+        if (req.isAuthenticated()) {
+            const ordersDoc = await orders.findOne({
+                user: mongoose.Types.ObjectId(req.user.id)
+            });
+
+            if (ordersDoc) res.json(ordersDoc);
+            else res.status(404).json({ message: "Order not found" });
+        } else {
+            res.sendStatus(403)
+        }
+    })
+
     app.post("/api/pay", async (req, res, done) => {
         const { email, amount, payment_method } = req.body
 
@@ -171,6 +185,28 @@ module.exports = app => {
             } else {
                 res.status(404).send({ message: 'PaymentID not found!' })
             }
+        } else {
+            res.sendStatus(403)
+        }
+    })
+
+    app.delete("/api/paypal-subscribe/:id", async (req, res) => {
+        if (req.isAuthenticated()) {
+            Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
+                $set: { payment_type: 'Cancel subscription' }
+            }, (err,) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+
+            orders.updateOne({ user: mongoose.Types.ObjectId(req.user.id) }, {
+                $set: { paymentType: 'Cancel subscription' }
+            }, (err,) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
         } else {
             res.sendStatus(403)
         }

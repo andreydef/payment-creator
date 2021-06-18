@@ -65,6 +65,21 @@ const ProductScreen = ({ match }) => {
                     </ListGroup.Item>
                 </div>
             )
+        } else if (product.payment_type === 'Cancel subscription') {
+            return (
+                <div>
+                    <ListGroup.Item className='paypal'>
+                        <p>PayPal</p>
+                        <PayPalSubscribe product={product} />
+                    </ListGroup.Item>
+                    <ListGroup.Item className='stripe'>
+                        <p>Stripe</p>
+                        <Elements stripe={stripePromise}>
+                            <StripeSubscribe email={profile.email} product={product} />
+                        </Elements>
+                    </ListGroup.Item>
+                </div>
+            )
         } else {
             return (
                 <Loader
