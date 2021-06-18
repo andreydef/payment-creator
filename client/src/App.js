@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Provider } from 'react-redux'
+import { Provider} from 'react-redux'
 import store from './store'
 
 import Routing from './routers/router'
@@ -14,4 +14,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default App

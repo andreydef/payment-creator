@@ -34,6 +34,7 @@
   "devDependencies": {
     "@material-ui/core": "^4.11.4",
     "@stripe/react-stripe-js": "^1.4.1",
-    "@stripe/stripe-js": "^1.15.0"
+    "@stripe/stripe-js": "^1.15.0",
+    "react-loader-spinner": "^4.0.0"
   }
 }
