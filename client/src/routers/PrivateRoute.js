@@ -12,7 +12,7 @@ export const PrivateRoute = ({ component: Component, isAuthenticated, isLogin, .
                 if (isLogin && isAuthenticated === false) {
                     setTimeout(() => {
                         setIsLoaded(true)
-                    },500)
+                    },1000)
 
                     if (isLoaded === true) {
                         return (

@@ -3,7 +3,6 @@ const mongoose = require("mongoose")
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
 const orders = mongoose.model("Orders")
-const Product = mongoose.model("product")
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
@@ -192,13 +191,13 @@ module.exports = app => {
 
     app.delete("/api/paypal-subscribe/:id", async (req, res) => {
         if (req.isAuthenticated()) {
-            Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
-                $set: { payment_type: 'Cancel subscription' }
-            }, (err,) => {
-                if (err) {
-                    console.log(err)
-                }
-            })
+            // Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
+            //     $set: { payment_type: 'Cancel subscription' }
+            // }, (err,) => {
+            //     if (err) {
+            //         console.log(err)
+            //     }
+            // })
 
             orders.updateOne({ user: mongoose.Types.ObjectId(req.user.id) }, {
                 $set: { paymentType: 'Cancel subscription' }
@@ -207,6 +206,16 @@ module.exports = app => {
                     console.log(err)
                 }
             })
+
+            orders.find({
+                user: mongoose.Types.ObjectId(req.user.id)
+            }, (err, data) =>{
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json(data);
+                }
+            });
         } else {
             res.sendStatus(403)
         }
