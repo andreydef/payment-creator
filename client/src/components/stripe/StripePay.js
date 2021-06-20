@@ -29,6 +29,7 @@ const StripePay = ({ email, amount, product }) => {
             body: JSON.stringify({
                 paymentID: result.paymentMethod.id,
                 product: product,
+                status: 'Payment',
                 paymentType: 'Stripe'
             })
         }).then(function(res) {

@@ -28,7 +28,6 @@ module.exports = app => {
                 new pay({
                     id: req.body.orderID,
                     user: req.user,
-                    status: req.body.status,
                     payer: req.body.payer,
                     products: req.body.product,
                     type: req.body.type,
@@ -147,6 +146,7 @@ module.exports = app => {
                 },
                 user: req.user,
                 paymentType: req.body.paymentType,
+                status: req.body.status,
                 paymentAmount: req.body.product.price,
                 createdAt: Date.now()
             }).save()
@@ -172,7 +172,7 @@ module.exports = app => {
                                 })
 
                                 orders.updateOne({ paymentID: req.params.id }, {
-                                    $set: { paymentType: 'Cancel subscription' }
+                                    $set: { status: 'Cancel subscription' }
                                 }, (err,) => {
                                     if (err) {
                                         console.log(err)
@@ -217,7 +217,7 @@ module.exports = app => {
             // })
 
             orders.updateOne({ paymentID: req.params.id }, {
-                $set: { paymentType: 'Cancel subscription' }
+                $set: { status: 'Cancel subscription' }
             }, (err,) => {
                 if (err) {
                     console.log(err)

@@ -122,7 +122,8 @@ class Profile extends Component {
     }
 
     const getSubscribeButton = (order) => {
-        if (order.paymentType === 'Stripe Subscribe')
+        if (order.paymentType === 'Stripe Subscribe'
+            && order.status === 'Subscribe')
         {
             return (
                 <td>
@@ -131,15 +132,17 @@ class Profile extends Component {
                     </Button>
                 </td>
             )
-        } else if (order.paymentType === 'PayPal Subscribe') {
+        } else if (order.paymentType === 'PayPal Subscribe'
+            && order.status === 'Subscribe') {
             return (
                 <td>
-                    <Button variant="contained" color="primary" className='button' onClick={() => sendDeletePayPal(order.paymentID)}>
+                    <Button variant="contained" color="primary" className='button'
+                            onClick={() => sendDeletePayPal(order.paymentID)}>
                         Delete Paypal Subscribe
                     </Button>
                 </td>
             )
-        } else if (order.paymentType === 'Cancel subscription') {
+        } else if (order.status === 'Cancel subscription') {
             return (
                 <td>Cancel subscription</td>
             )

@@ -17,6 +17,7 @@ const PayPalPay = ({ amount, product }) => {
             body: JSON.stringify({
                 paymentID: data.orderID,
                 product: product,
+                status: 'Payment',
                 paymentType: 'PayPal'
             })
         }).then(function(res) {
@@ -33,7 +34,6 @@ const PayPalPay = ({ amount, product }) => {
             },
             body: JSON.stringify({
                 orderID: data.orderID,
-                status: details.status,
                 payer: details.payer,
                 product: product,
                 type: 'paypal'

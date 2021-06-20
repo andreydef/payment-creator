@@ -20,6 +20,7 @@ module.exports = app => {
                 },
                 user: req.user,
                 paymentType: req.body.paymentType,
+                status: req.body.status,
                 paymentAmount: req.body.product.price,
                 createdAt: Date.now()
             }).save()
