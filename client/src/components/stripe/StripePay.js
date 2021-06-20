@@ -1,19 +1,22 @@
-import React  from 'react'
+import React, { useState } from 'react'
+import { Redirect } from "react-router-dom";
+
 import {
     CardElement,
     useStripe,
     useElements
 } from '@stripe/react-stripe-js'
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-
-import CardInput from './CardInput';
+import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import CardInput from './CardInput'
 
 import './Stripe.css'
 
 const StripePay = ({ email, amount, product }) => {
+    const [isLoaded, setIsLoaded] = useState(false)
+
     const stripe = useStripe()
     const elements = useElements()
 
@@ -26,7 +29,7 @@ const StripePay = ({ email, amount, product }) => {
             body: JSON.stringify({
                 paymentID: result.paymentMethod.id,
                 product: product,
-                paymentType: 'StripePay'
+                paymentType: 'Stripe'
             })
         }).then(function(res) {
             return res.json();
@@ -66,26 +69,32 @@ const StripePay = ({ email, amount, product }) => {
             responseOrder(result)
             res.json()
 
-            alert('Success Pay!');
+            setIsLoaded(true)
             const { client_secret } = res.body;
             await stripe.confirmCardPayment(client_secret);
         }
-    };
+    }
 
-    return (
-        <form>
-            <Card className='root'>
-                <CardContent className='content'>
-                    <CardInput />
-                    <div className='div'>
-                        <Button variant="contained" color="primary" className='button' onClick={handleSubmit}>
-                            Pay
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </form>
-    );
+    if (isLoaded === true) {
+        return (
+            <Redirect to="/profile" />
+        )
+    } else {
+        return (
+            <form>
+                <Card className='root'>
+                    <CardContent className='content'>
+                        <CardInput />
+                        <div className='div'>
+                            <Button variant="contained" color="primary" className='button' onClick={handleSubmit}>
+                                Pay
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </form>
+        )
+    }
 }
 
 export default StripePay

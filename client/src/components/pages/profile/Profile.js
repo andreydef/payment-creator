@@ -42,18 +42,28 @@ class Profile extends Component {
     const { orders, subscriptionID } = this.state;
 
     const sendDeleteStripe = async (paymentID) => {
-        alert('Cancel subscribe')
-        return await fetch(`/api/subscribe/${paymentID}`, {
+        fetch(`/api/stripe-subscribe/${paymentID}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
+        }).then(function(response) {
+            if (response.status === 403 || response.status === 422) {
+                alert(response.data.message)
+            }
+            return response.json();
+        }).then(async (data) => {
+            this.setState({
+                orders: data,
+                isLoaded: true
+            });
+        }).catch(function(err) {
+            console.log(err)
+        });
     }
 
-    const sendDeletePayPal = (order) => {
-
-        fetch(`/api/paypal-subscribe/${subscriptionID}`, {
+    const sendDeletePayPal = (paymentID) => {
+        fetch(`/api/paypal-subscribe/${paymentID}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -63,7 +73,7 @@ class Profile extends Component {
                 Promise.reject(new Error("Bad response from server"));
             }
             return response.json();
-        }).then( async (data) => {
+        }).then(async (data) => {
             this.setState({
                 orders: data,
                 isLoaded: true
@@ -96,7 +106,7 @@ class Profile extends Component {
                 }
             }).then(res => {
                 console.log(`Axios Call completed: ${res}`)
-                return fetch(`/api/paypal-subscribe/${order}`, {
+                return fetch(`/api/paypal-subscribe/${paymentID}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
@@ -107,6 +117,7 @@ class Profile extends Component {
             })
         }).catch(function() {
             console.log("couldn't get auth token");
+            alert('couldn\'t get auth token')
         });
     }
 
@@ -123,7 +134,7 @@ class Profile extends Component {
         } else if (order.paymentType === 'PayPal Subscribe') {
             return (
                 <td>
-                    <Button variant="contained" color="primary" className='button' onClick={() => sendDeletePayPal(order.product.productID)}>
+                    <Button variant="contained" color="primary" className='button' onClick={() => sendDeletePayPal(order.paymentID)}>
                         Delete Paypal Subscribe
                     </Button>
                 </td>
@@ -142,8 +153,8 @@ class Profile extends Component {
     if (this.props.auth.isAuthenticated) {
         if (this.state.isLoaded === true) {
             setTimeout(() => {
-                window.location.reload(true)
-            },2000)
+                window.location.reload(false)
+            },3000)
 
             return (
                 <center>

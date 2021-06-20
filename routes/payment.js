@@ -156,7 +156,7 @@ module.exports = app => {
         }
     })
 
-    app.delete("/api/subscribe/:id", async (req, res) => {
+    app.delete("/api/stripe-subscribe/:id", async (req, res) => {
         if (req.isAuthenticated()) {
             if (!!req.params.id)
             {
@@ -170,10 +170,27 @@ module.exports = app => {
                                 await stripe.subscriptions.update(data.subscriptionID, {
                                     cancel_at_period_end: true
                                 })
-                                res.status(201).send({ message: 'You successfully delete a subscription!' })
+
+                                orders.updateOne({ paymentID: req.params.id }, {
+                                    $set: { paymentType: 'Cancel subscription' }
+                                }, (err,) => {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                })
+
+                                orders.find({
+                                    user: mongoose.Types.ObjectId(req.user.id)
+                                }, (err, data) =>{
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        res.json(data);
+                                    }
+                                });
                             } catch (err) {
                                 console.log(err)
-                                res.status(500).send({ message: err })
+                                res.status(422).json({ message: 'The subscription has already been deleted or is not active' })
                             }
                         } else {
                             console.log('Users dont match!')
@@ -199,7 +216,7 @@ module.exports = app => {
             //     }
             // })
 
-            orders.updateOne({ user: mongoose.Types.ObjectId(req.user.id) }, {
+            orders.updateOne({ paymentID: req.params.id }, {
                 $set: { paymentType: 'Cancel subscription' }
             }, (err,) => {
                 if (err) {

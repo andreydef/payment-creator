@@ -1,19 +1,21 @@
-import React  from 'react'
+import React, { useState } from 'react'
 import {
     CardElement,
     useStripe,
     useElements
 } from '@stripe/react-stripe-js'
+import { Redirect } from "react-router-dom"
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-
-import CardInput from './CardInput';
+import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import CardInput from './CardInput'
 
 import './Stripe.css'
 
 const StripeSubscribe = ({ email, product }) => {
+    const [isLoaded, setIsLoaded] = useState(false)
+
     const stripe = useStripe()
     const elements = useElements()
 
@@ -53,26 +55,32 @@ const StripeSubscribe = ({ email, product }) => {
             if (status === 'requires_action') {
                 alert('Error subscription!');
             } else {
-                alert('Success subscribe!');
+                setIsLoaded(true)
                 await stripe.confirmCardPayment(client_secret)
             }
         }
-    };
+    }
 
-    return (
-        <form>
-            <Card className='root'>
-                <CardContent className='content'>
-                    <CardInput />
-                    <div className='div'>
-                        <Button variant="contained" color="primary" className='button' onClick={handleSubmit}>
-                            Subscribe
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </form>
-    );
+    if (isLoaded === true) {
+        return (
+            <Redirect to="/profile" />
+        )
+    } else {
+        return (
+            <form>
+                <Card className='root'>
+                    <CardContent className='content'>
+                        <CardInput />
+                        <div className='div'>
+                            <Button variant="contained" color="primary" className='button' onClick={handleSubmit}>
+                                Subscribe
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </form>
+        )
+    }
 }
 
 export default StripeSubscribe
