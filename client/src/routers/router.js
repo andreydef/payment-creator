@@ -30,26 +30,24 @@ class Routing extends Component {
                     <div className="App">
                         <Navbar />
                         <Switch>
-                            <Route exact path="/" component={Login} />
+                            <PrivateRoute
+                                exact
+                                path="/"
+                                component={Home}
+                                isAuthenticated={this.props.isAuthenticated}
+                                isLogin={this.props.isLogin}
+                            />
+                            <Route exact path="/login" component={Login} />
                             <Route path="/description" component={Description} />
                             <Route path="/therms" component={Therms} />
                             <Route path="/privacy-policy" component={PrivacyPolicy} />
                             <PrivateRoute
-                                exact
                                 path="/profile"
                                 component={Profile}
                                 isAuthenticated={this.props.isAuthenticated}
                                 isLogin={this.props.isLogin}
                             />
                             <PrivateRoute
-                                exact
-                                path="/products"
-                                component={Home}
-                                isAuthenticated={this.props.isAuthenticated}
-                                isLogin={this.props.isLogin}
-                            />
-                            <PrivateRoute
-                                exact
                                 path="/product/:id"
                                 component={ProductScreen}
                                 isAuthenticated={this.props.isAuthenticated}

@@ -5,7 +5,7 @@ module.exports = app => {
     if (req.isAuthenticated()) {
       res.redirect("/profile")
     } else {
-      res.redirect("/")
+      res.redirect("/login")
     }
   })
 
@@ -24,21 +24,17 @@ module.exports = app => {
       if (req.isAuthenticated()) {
         res.redirect("/profile")
       } else {
-        res.redirect("/")
+        res.redirect("/login")
       }
     }
   )
 
   app.get("/api/logout", (req, res) => {
     req.logout()
-    res.redirect("/")
+    res.redirect("/login")
   })
 
   app.get("/api/current_user", (req, res) => {
-    if (req.isAuthenticated()) {
-      res.send(req.user);
-    } else {
-      res.sendStatus(403)
-    }
+    res.send(req.user);
   })
 }
