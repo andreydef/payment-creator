@@ -12,11 +12,11 @@ export const PrivateRoute = ({ component: Component, isAuthenticated, isLogin, .
                 if (isLogin && isAuthenticated === false) {
                     setTimeout(() => {
                         setIsLoaded(true)
-                    },500)
+                    },2000)
 
                     if (isLoaded === true) {
                         return (
-                            <Redirect to="/" />
+                            <Redirect to="/login" />
                         )
                     } else {
                         return (
@@ -32,7 +32,7 @@ export const PrivateRoute = ({ component: Component, isAuthenticated, isLogin, .
                     }
                 } else {
                     return isAuthenticated || isLogin ?
-                        <Component {...props} /> :  <Redirect to="/" />;
+                        <Component {...props} /> :  <Redirect to="/login" />;
                 }
             }}
         />

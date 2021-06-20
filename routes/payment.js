@@ -3,7 +3,6 @@ const mongoose = require("mongoose")
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
 const orders = mongoose.model("Orders")
-const Product = mongoose.model("product")
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
@@ -29,7 +28,6 @@ module.exports = app => {
                 new pay({
                     id: req.body.orderID,
                     user: req.user,
-                    status: req.body.status,
                     payer: req.body.payer,
                     products: req.body.product,
                     type: req.body.type,
@@ -148,6 +146,7 @@ module.exports = app => {
                 },
                 user: req.user,
                 paymentType: req.body.paymentType,
+                status: req.body.status,
                 paymentAmount: req.body.product.price,
                 createdAt: Date.now()
             }).save()
@@ -157,7 +156,7 @@ module.exports = app => {
         }
     })
 
-    app.delete("/api/subscribe/:id", async (req, res) => {
+    app.delete("/api/stripe-subscribe/:id", async (req, res) => {
         if (req.isAuthenticated()) {
             if (!!req.params.id)
             {
@@ -171,10 +170,27 @@ module.exports = app => {
                                 await stripe.subscriptions.update(data.subscriptionID, {
                                     cancel_at_period_end: true
                                 })
-                                res.status(201).send({ message: 'You successfully delete a subscription!' })
+
+                                orders.updateOne({ paymentID: req.params.id }, {
+                                    $set: { status: 'Cancel subscription' }
+                                }, (err,) => {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                })
+
+                                orders.find({
+                                    user: mongoose.Types.ObjectId(req.user.id)
+                                }, (err, data) =>{
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        res.json(data);
+                                    }
+                                });
                             } catch (err) {
                                 console.log(err)
-                                res.status(500).send({ message: err })
+                                res.status(422).json({ message: 'The subscription has already been deleted or is not active' })
                             }
                         } else {
                             console.log('Users dont match!')
@@ -192,21 +208,31 @@ module.exports = app => {
 
     app.delete("/api/paypal-subscribe/:id", async (req, res) => {
         if (req.isAuthenticated()) {
-            Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
-                $set: { payment_type: 'Cancel subscription' }
+            // Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
+            //     $set: { payment_type: 'Cancel subscription' }
+            // }, (err,) => {
+            //     if (err) {
+            //         console.log(err)
+            //     }
+            // })
+
+            orders.updateOne({ paymentID: req.params.id }, {
+                $set: { status: 'Cancel subscription' }
             }, (err,) => {
                 if (err) {
                     console.log(err)
                 }
             })
 
-            orders.updateOne({ user: mongoose.Types.ObjectId(req.user.id) }, {
-                $set: { paymentType: 'Cancel subscription' }
-            }, (err,) => {
+            orders.find({
+                user: mongoose.Types.ObjectId(req.user.id)
+            }, (err, data) =>{
                 if (err) {
                     console.log(err)
+                } else {
+                    res.json(data);
                 }
-            })
+            });
         } else {
             res.sendStatus(403)
         }

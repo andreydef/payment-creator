@@ -1,9 +1,13 @@
-import React  from 'react'
+import React, { useState } from 'react'
+import { Redirect } from "react-router-dom"
+
 import { PayPalButton } from "react-paypal-button-v2"
 
 import './PayPal.css'
 
 const PayPalSubscribe = ({ product }) => {
+    const [isLoaded, setIsLoaded] = useState(false)
+
     const paypalSubscribe = (data, actions) => {
         return actions.subscription.create({
             'plan_id': "P-3H226719GE121945VMC5IQTI",
@@ -24,16 +28,16 @@ const PayPalSubscribe = ({ product }) => {
                 paymentID: data.orderID,
                 subscriptionID: data.subscriptionID,
                 product: product,
+                status: 'Subscribe',
                 paymentType: 'PayPal Subscribe',
             })
         }).then(function(res) {
+            setIsLoaded(true)
             return res.json();
         }).catch(err => console.log(err))
     }
 
     const paypalOnApprove = (data, detail) => {
-        alert("Subscription completed");
-
         const resPay = fetch('/api/subscribe', {
             method: 'POST',
             headers: {
@@ -50,30 +54,36 @@ const PayPalSubscribe = ({ product }) => {
         resPay.json()
     };
 
-    return (
-        <div>
-            <PayPalButton
-                amount="10.0"
-                currency="USD"
-                createSubscription={(data, details) => paypalSubscribe(data, details)}
-                onApprove={(data, details) => paypalOnApprove(data, details)}
-                options={{
-                    // clientID of profile, which have active subscription
-                    clientId: 'AZRtameGwLo6f_zKc73fnXRoR8zZX-dFzlHci18FIXRUlMY2rtdpZVPnXyYx5QhMDcZ0sE9tjDuDKSRR',
-                    vault:true
-                }}
-                onError={(err) => paypalOnError(err)}
-                catchError={(err) => paypalOnError(err)}
-                onCancel={(err) => paypalOnError(err)}
-                style={{
-                    shape: 'rect',
-                    color: 'blue',
-                    layout: 'vertical',
-                    label: 'subscribe',
-                }}
-            />
-        </div>
-    )
+    if (isLoaded === true) {
+        return (
+            <Redirect to="/profile" />
+        )
+    } else {
+        return (
+            <div>
+                <PayPalButton
+                    amount="10.0"
+                    currency="USD"
+                    createSubscription={(data, details) => paypalSubscribe(data, details)}
+                    onApprove={(data, details) => paypalOnApprove(data, details)}
+                    options={{
+                        // clientID of profile, which have active subscription
+                        clientId: 'AZRtameGwLo6f_zKc73fnXRoR8zZX-dFzlHci18FIXRUlMY2rtdpZVPnXyYx5QhMDcZ0sE9tjDuDKSRR',
+                        vault:true
+                    }}
+                    onError={(err) => paypalOnError(err)}
+                    catchError={(err) => paypalOnError(err)}
+                    onCancel={(err) => paypalOnError(err)}
+                    style={{
+                        shape: 'rect',
+                        color: 'blue',
+                        layout: 'vertical',
+                        label: 'subscribe',
+                    }}
+                />
+            </div>
+        )
+    }
 }
 
 export default PayPalSubscribe
