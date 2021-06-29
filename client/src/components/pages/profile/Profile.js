@@ -177,7 +177,7 @@ class Profile extends Component {
                     <p className="lead">You profile data:</p>
                     <center>
                         <ul>
-                            <img className="photo" src={this.props.auth.user.photo} alt="" />
+                            <img className="photo" src={this.props.auth.user.picture} alt="" />
                             <li>Your Name: {this.props.auth.user.name}</li>
                             <li>Your Email: {this.props.auth.user.email}</li>
                         </ul>

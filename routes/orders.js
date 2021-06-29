@@ -1,12 +1,16 @@
 const mongoose = require("mongoose")
 const asyncHandler = require("express-async-handler")
+const jwt = require('jsonwebtoken')
+const keys = require("../config/keys")
 
 const User = mongoose.model("users")
 const orders = mongoose.model("Orders")
 
 module.exports = app => {
     app.post("/api/create-order", async (req, res, done) => {
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
+            const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`)
+
             new orders({
                 paymentID: req.body.paymentID,
                 subscriptionID: req.body.subscriptionID,
@@ -18,7 +22,7 @@ module.exports = app => {
                     price: req.body.product.price,
                     payment_type: req.body.product.payment_type
                 },
-                user: req.user,
+                user: user,
                 paymentType: req.body.paymentType,
                 status: req.body.status,
                 paymentAmount: req.body.product.price,
@@ -34,14 +38,16 @@ module.exports = app => {
 
     app.get("/api/orders",
         asyncHandler(async (req, res) => {
-            if (req.isAuthenticated()) {
+            if (req.cookies['auth_token']) {
+                const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+
                 orders.find({
-                    user: mongoose.Types.ObjectId(req.user.id)
+                    user: user
                 }, (err, data) =>{
                     if (err) {
                         console.log(err)
                     } else {
-                        User.updateOne({ email: req.user.email }, {
+                        User.updateOne({ email: user.email }, {
                             $set: { orders: data }
                         }, (err,) => {
                             if (err) {
@@ -51,7 +57,7 @@ module.exports = app => {
 
                         res.json(data);
                     }
-                });
+                })
             } else {
                 res.sendStatus(403)
             }
@@ -59,7 +65,7 @@ module.exports = app => {
     )
 
     app.get("/api/orders/:id", async (req, res) => {
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
             const orders = await orders.findOne({
                 user: mongoose.Types.ObjectId(req.params.id)
             });
