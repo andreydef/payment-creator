@@ -1,12 +1,24 @@
 const mongoose = require("mongoose")
 const asyncHandler = require("express-async-handler")
+const jwt = require('jsonwebtoken')
+const keys = require("../config/keys")
 
-const User = mongoose.model("users")
+const UserModel = mongoose.model("users")
 const orders = mongoose.model("Orders")
 
 module.exports = app => {
     app.post("/api/create-order", async (req, res, done) => {
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
+
             new orders({
                 paymentID: req.body.paymentID,
                 subscriptionID: req.body.subscriptionID,
@@ -18,7 +30,7 @@ module.exports = app => {
                     price: req.body.product.price,
                     payment_type: req.body.product.payment_type
                 },
-                user: req.user,
+                id_user: user.id,
                 paymentType: req.body.paymentType,
                 status: req.body.status,
                 paymentAmount: req.body.product.price,
@@ -34,40 +46,37 @@ module.exports = app => {
 
     app.get("/api/orders",
         asyncHandler(async (req, res) => {
-            if (req.isAuthenticated()) {
+            if (req.cookies['auth_token']) {
+                const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`,
+                    function(err, decoded) {
+                    if (err) {
+                        return res.status(500).send({
+                            message: err.message
+                        })
+                    } else {
+                        return decoded
+                    }
+                })
+
                 orders.find({
-                    user: mongoose.Types.ObjectId(req.user.id)
+                    id_user: user.id
                 }, (err, data) =>{
                     if (err) {
                         console.log(err)
                     } else {
-                        User.updateOne({ email: req.user.email }, {
+                        UserModel.updateOne({ id_user: user.id }, {
                             $set: { orders: data }
                         }, (err,) => {
                             if (err) {
                                 console.log(err)
                             }
                         })
-
-                        res.json(data);
+                        res.json(data)
                     }
-                });
+                })
             } else {
                 res.sendStatus(403)
             }
         })
     )
-
-    app.get("/api/orders/:id", async (req, res) => {
-        if (req.isAuthenticated()) {
-            const orders = await orders.findOne({
-                user: mongoose.Types.ObjectId(req.params.id)
-            });
-
-            if (orders) res.json(orders);
-            else res.status(404).json({ message: "Order not found" });
-        } else {
-            res.sendStatus(403)
-        }
-    })
 }

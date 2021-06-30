@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const jwt = require('jsonwebtoken')
+const keys = require("../config/keys")
 
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
@@ -8,9 +10,19 @@ const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbm
 
 module.exports = app => {
     app.get("/api/subscribe/cancel", async (req, res) => {
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
+
             const ordersDoc = await orders.findOne({
-                user: mongoose.Types.ObjectId(req.user.id)
+                user: user
             });
 
             if (ordersDoc) res.json(ordersDoc);
@@ -23,11 +35,21 @@ module.exports = app => {
     app.post("/api/pay", async (req, res, done) => {
         const { email, amount, payment_method } = req.body
 
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
+
             if (req.body.type === 'paypal') {
                 new pay({
                     id: req.body.orderID,
-                    user: req.user,
+                    user: user,
                     payer: req.body.payer,
                     products: req.body.product,
                     type: req.body.type,
@@ -65,7 +87,7 @@ module.exports = app => {
 
                 new pay({
                     id: req.body.payment_method,
-                    user: req.user,
+                    user: user,
                     amount: amount,
                     email: paymentIntent.receipt_email,
                     currency: paymentIntent.currency,
@@ -83,13 +105,22 @@ module.exports = app => {
     })
 
     app.post("/api/subscribe", async (req, res, done) => {
-        const { user_email, payment_method } = req.body;
+        const { user_email, payment_method } = req.body
+        const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            if (err) {
+                return res.status(500).send({
+                    message: err.message
+                })
+            } else {
+                return decoded
+            }
+        })
 
         if (req.body.type === 'paypal') {
             new subscriptions({
                 id: req.body.orderID,
                 subscriptionID: req.body.subscriptionID,
-                user: req.user,
+                user: user,
                 products: req.body.product,
                 type: req.body.type,
                 createdAt: Date.now()
@@ -123,7 +154,7 @@ module.exports = app => {
             new subscriptions({
                 id: req.body.payment_method,
                 subscriptionID: subscription.id,
-                user: req.user,
+                user: user,
                 customer: subscription.customer,
                 products: req.body.product,
                 type: req.body.type,
@@ -144,7 +175,7 @@ module.exports = app => {
                     price: req.body.product.price,
                     payment_type: req.body.product.payment_type
                 },
-                user: req.user,
+                id_user: user.id,
                 paymentType: req.body.paymentType,
                 status: req.body.status,
                 paymentAmount: req.body.product.price,
@@ -157,14 +188,24 @@ module.exports = app => {
     })
 
     app.delete("/api/stripe-subscribe/:id", async (req, res) => {
-        if (req.isAuthenticated()) {
+        if (req.cookies['auth_token']) {
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
+
             if (!!req.params.id)
             {
                 orders.findOne({ paymentID: req.params.id }, async (err, data) => {
                     if (err) {
                         res.status(403).send({ message: err })
                     } else {
-                        if (req.user.id === data.user.toString())
+                        if (JSON.stringify(user.id) === JSON.stringify(data.id_user))
                         {
                             try {
                                 await stripe.subscriptions.update(data.subscriptionID, {
@@ -180,7 +221,7 @@ module.exports = app => {
                                 })
 
                                 orders.find({
-                                    user: mongoose.Types.ObjectId(req.user.id)
+                                    paymentID: req.params.id
                                 }, (err, data) =>{
                                     if (err) {
                                         console.log(err)
@@ -207,14 +248,16 @@ module.exports = app => {
     })
 
     app.delete("/api/paypal-subscribe/:id", async (req, res) => {
-        if (req.isAuthenticated()) {
-            // Product.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) }, {
-            //     $set: { payment_type: 'Cancel subscription' }
-            // }, (err,) => {
-            //     if (err) {
-            //         console.log(err)
-            //     }
-            // })
+        if (req.cookies['auth_token']) {
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             orders.updateOne({ paymentID: req.params.id }, {
                 $set: { status: 'Cancel subscription' }
@@ -225,7 +268,7 @@ module.exports = app => {
             })
 
             orders.find({
-                user: mongoose.Types.ObjectId(req.user.id)
+                user: user
             }, (err, data) =>{
                 if (err) {
                     console.log(err)

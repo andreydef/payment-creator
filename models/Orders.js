@@ -33,10 +33,9 @@ const ordersSchema = mongoose.Schema(
                 default: 0
             },
         },
-        user: {
-            type: Object,
-            required: true,
-            ref: 'users'
+        id_user: {
+            type: String,
+            required: true
         },
         paymentType: {
             type: String,
