@@ -11,11 +11,7 @@ const redirectUri = 'auth/google'
 
 module.exports = app => {
   app.get('/', (req, res) => {
-    if (req.cookies['auth_token']) {
-      res.redirect("/profile")
-    } else {
-      res.redirect("/login")
-    }
+    res.redirect("/profile")
   })
 
   // Getting login url
@@ -58,42 +54,55 @@ module.exports = app => {
   })
 
   // Getting the current user
-  app.get("/api/current_user", (req, res, done) => {
+  app.get("/api/current_user", async (req, res, done) => {
     try {
-      const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+      if (req.cookies['auth_token'] === undefined) {
+        return null
+      } else {
+        const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+          if (err) {
+            return res.status(500).send({
+              message: err.message
+            })
+          } else {
+            return decoded
+          }
+        })
 
-      User.findOne({ email: user.email }).then(  async existingUser => {
-        if (existingUser) {
-          const orders = await Orders.find({
-            user: mongoose.Types.ObjectId(existingUser._id)
-          }, (err, data) =>{
-            if (err) {
-              console.log(err)
-            } else {
-              return data
-            }
-          })
+        User.findOne({ email: user.email }).then(  async existingUser => {
+          if (existingUser) {
+            const orders = await Orders.find({
+              user: mongoose.Types.ObjectId(existingUser._id)
+            }, (err, data) =>{
+              if (err) {
+                console.log(err)
+              } else {
+                return data
+              }
+            })
 
-          User.updateOne({ email: user.email }, {
-            $set: { orders: orders }
-          }, (err,) => {
-            if (err) {
-              console.log(err)
-            }
-          })
+            User.updateOne({ id_user: user.id }, {
+              $set: { orders: orders }
+            }, (err,) => {
+              if (err) {
+                console.log(err)
+              }
+            })
 
-          done(null, existingUser);
-        } else {
-          new User({
-            name: user.name,
-            email: user.email,
-            photo: user.picture,
-            orders: []
-          }).save().then(user => done(null, user));
-        }
-      })
+            done(null, existingUser);
+          } else {
+            new User({
+              id_user: user.id,
+              name: user.name,
+              email: user.email,
+              photo: user.picture,
+              orders: []
+            }).save().then(user => done(null, user));
+          }
+        })
 
-      return res.send(user);
+        return res.send(user);
+      }
     } catch (err) {
       console.log(err);
       res.send(null);

@@ -11,10 +11,18 @@ const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbm
 module.exports = app => {
     app.get("/api/subscribe/cancel", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             const ordersDoc = await orders.findOne({
-                user: user.id
+                user: user
             });
 
             if (ordersDoc) res.json(ordersDoc);
@@ -28,7 +36,15 @@ module.exports = app => {
         const { email, amount, payment_method } = req.body
 
         if (req.cookies['auth_token']) {
-            const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             if (req.body.type === 'paypal') {
                 new pay({
@@ -90,7 +106,15 @@ module.exports = app => {
 
     app.post("/api/subscribe", async (req, res, done) => {
         const { user_email, payment_method } = req.body
-        const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+        const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            if (err) {
+                return res.status(500).send({
+                    message: err.message
+                })
+            } else {
+                return decoded
+            }
+        })
 
         if (req.body.type === 'paypal') {
             new subscriptions({
@@ -151,7 +175,7 @@ module.exports = app => {
                     price: req.body.product.price,
                     payment_type: req.body.product.payment_type
                 },
-                user: user,
+                id_user: user.id,
                 paymentType: req.body.paymentType,
                 status: req.body.status,
                 paymentAmount: req.body.product.price,
@@ -165,7 +189,15 @@ module.exports = app => {
 
     app.delete("/api/stripe-subscribe/:id", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             if (!!req.params.id)
             {
@@ -173,7 +205,7 @@ module.exports = app => {
                     if (err) {
                         res.status(403).send({ message: err })
                     } else {
-                        if (JSON.stringify(user) === JSON.stringify(data.user))
+                        if (JSON.stringify(user.id) === JSON.stringify(data.id_user))
                         {
                             try {
                                 await stripe.subscriptions.update(data.subscriptionID, {
@@ -189,7 +221,7 @@ module.exports = app => {
                                 })
 
                                 orders.find({
-                                    user: mongoose.Types.ObjectId(user.id)
+                                    paymentID: req.params.id
                                 }, (err, data) =>{
                                     if (err) {
                                         console.log(err)
@@ -217,7 +249,15 @@ module.exports = app => {
 
     app.delete("/api/paypal-subscribe/:id", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`);
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             orders.updateOne({ paymentID: req.params.id }, {
                 $set: { status: 'Cancel subscription' }
