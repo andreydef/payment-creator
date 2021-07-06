@@ -7,6 +7,8 @@ const { getGoogleAuthURL, getTokens } = require('../helpers/google-auth')
 const User = mongoose.model("users")
 const Orders = mongoose.model("Orders")
 
+const db = require('../config/database')
+
 const redirectUri = 'auth/google'
 
 module.exports = app => {
@@ -69,39 +71,90 @@ module.exports = app => {
           }
         })
 
-        User.findOne({ email: user.email }).then(  async existingUser => {
-          if (existingUser) {
-            const orders = await Orders.find({
-              user: mongoose.Types.ObjectId(existingUser._id)
-            }, (err, data) =>{
-              if (err) {
-                console.log(err)
-              } else {
-                return data
-              }
-            })
+        // await db.query(
+        //     'CREATE TABLE IF NOT EXISTS users (' +
+        //     'id VARCHAR(50) PRIMARY KEY,' +
+        //     'email VARCHAR(50) NOT NULL,' +
+        //     'verified_email BOOLEAN NOT NULL,' +
+        //     'name VARCHAR(50) NOT NULL,' +
+        //     'given_name VARCHAR(50) NOT NULL,' +
+        //     'family_name VARCHAR(50) NOT NULL, ' +
+        //     'picture VARCHAR(150),' +
+        //     'locale VARCHAR(5) NOT NULL' +
+        //     ')'
+        // )
 
-            User.updateOne({ id_user: user.id }, {
-              $set: { orders: orders }
-            }, (err,) => {
-              if (err) {
-                console.log(err)
-              }
-            })
-
-            done(null, existingUser);
+        const { rows } = await db.query('SELECT * FROM users ' +
+            'WHERE email = $1', [user.email], (err, doc) => {
+          if (err) {
+            console.log(err)
           } else {
-            new User({
-              id_user: user.id,
-              name: user.name,
-              email: user.email,
-              photo: user.picture,
-              orders: []
-            }).save().then(user => done(null, user));
+            return doc
           }
         })
 
-        return res.send(user);
+        if (rows) {
+          done(null, rows)
+        } else {
+          await db.query(
+              'INSERT INTO users (' +
+              'id, email, verified_email, ' +
+              'name, given_name, ' +
+              'family_name, picture, locale)' +
+              'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+              [
+                user.id,
+                user.email,
+                user.verified_email,
+                user.name,
+                user.given_name,
+                user.family_name,
+                user.picture,
+                user.locale
+              ]
+          )
+        }
+
+        // if (rows) {
+        //   done(null, rows);
+        //   console.log(rows)
+        // } else {
+        //   done(null, user)
+        //   console.log('user does not exist')
+        // }
+
+        // User.findOne({ email: user.email }).then(  async existingUser => {
+        //   if (existingUser) {
+        //     const orders = await Orders.find({
+        //       user: mongoose.Types.ObjectId(existingUser._id)
+        //     }, (err, data) =>{
+        //       if (err) {
+        //         console.log(err)
+        //       } else {
+        //         return data
+        //       }
+        //     })
+        //
+        //     User.updateOne({ id_user: user.id }, {
+        //       $set: { orders: orders }
+        //     }, (err,) => {
+        //       if (err) {
+        //         console.log(err)
+        //       }
+        //     })
+        //
+        //     done(null, existingUser);
+        //   } else {
+        //     // new User({
+        //     //   id_user: user.id,
+        //     //   name: user.name,
+        //     //   email: user.email,
+        //     //   photo: user.picture,
+        //     //   orders: []
+        //     // }).save().then(user => done(null, user));
+        //   }
+        // })
+        return res.send(user)
       }
     } catch (err) {
       console.log(err);
