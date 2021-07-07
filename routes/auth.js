@@ -1,13 +1,11 @@
-const mongoose = require("mongoose")
 const axios = require("axios")
-const keys = require("../config/keys")
 const jwt = require('jsonwebtoken')
-const { getGoogleAuthURL, getTokens } = require('../helpers/google-auth')
 
-const User = mongoose.model("users")
-const Orders = mongoose.model("Orders")
+const { getGoogleAuthURL, getTokens } = require('../helpers/google-auth')
+const createUser = require('../models/User')
 
 const db = require('../config/database')
+const keys = require("../config/keys")
 
 const redirectUri = 'auth/google'
 
@@ -71,19 +69,7 @@ module.exports = app => {
           }
         })
 
-        await db.query(
-            'CREATE TABLE IF NOT EXISTS users (' +
-            'id VARCHAR(50) PRIMARY KEY,' +
-            'email VARCHAR(50) NOT NULL,' +
-            'verified_email BOOLEAN NOT NULL,' +
-            'name VARCHAR(50) NOT NULL,' +
-            'given_name VARCHAR(50) NOT NULL,' +
-            'family_name VARCHAR(50) NOT NULL, ' +
-            'picture VARCHAR(150),' +
-            'locale VARCHAR(5) NOT NULL' +
-            ')'
-        )
-
+        await createUser()
         const { rows } = await db.query('SELECT * FROM users ' +
             'WHERE id = $1', [user.id], (err, doc) => {
           if (err) {
@@ -113,65 +99,6 @@ module.exports = app => {
               ]
           )
         }
-
-        // if (rows) {
-        //   // done(null, user)
-        //   console.log('yes!')
-        // } else {
-        //   console.log('no!')
-        // }
-
-        // if (rows === []) {
-        //   done(null, user)
-        //
-        //   await db.query(
-        //       'INSERT INTO users (' +
-        //       'id, email, verified_email, ' +
-        //       'name, given_name, ' +
-        //       'family_name, picture, locale)' +
-        //       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        //       [
-        //         user.id,
-        //         user.email,
-        //         user.verified_email,
-        //         user.name,
-        //         user.given_name,
-        //         user.family_name,
-        //         user.picture,
-        //         user.locale
-        //       ]
-        //   )
-        // }
-
-        // if (rows) {
-        //   done(null, user)
-        //
-        //   await db.query(
-        //       'INSERT INTO users (' +
-        //       'id, email, verified_email, ' +
-        //       'name, given_name, ' +
-        //       'family_name, picture, locale)' +
-        //       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        //       [
-        //         user.id,
-        //         user.email,
-        //         user.verified_email,
-        //         user.name,
-        //         user.given_name,
-        //         user.family_name,
-        //         user.picture,
-        //         user.locale
-        //       ]
-        //   )
-        // }
-
-        // if (rows) {
-        //   done(null, rows);
-        //   console.log(rows)
-        // } else {
-        //   done(null, user)
-        //   console.log('user does not exist')
-        // }
 
         // User.findOne({ email: user.email }).then(  async existingUser => {
         //   if (existingUser) {

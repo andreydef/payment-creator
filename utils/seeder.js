@@ -1,52 +1,42 @@
-const mongoose = require("mongoose")
-const format = require('pg-format');
+// const mongoose = require("mongoose")
+//const format = require('pg-format');
 
 const products = require("../data/products")
-const Product = require("../models/Product")
 
 const db = require('../config/database')
-
-// const db = require("../config/keys").mongoURI
-// mongoose
-//     .connect(db, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true
-//     })
-//     .then(() => console.log("MongoDB connected successfully!"))
-//     .catch(err => console.log(err))
-
+const importProduct = require('../models/Product')
 
 const importData = async () => {
     try {
-        // const sampleProducts = products.map((product) => {
-        //     return { ...product };
-        // });
-
-        // await db.query(
-        //     'CREATE TABLE IF NOT EXISTS users (' +
-        //     'id SERIAL PRIMARY KEY,' +
-        //     'name VARCHAR(50) NOT NULL,' +
-        //     'email VARCHAR(50) NOT NULL,' +
-        //     'photo VARCHAR(150) NOT NULL,' +
-        //     'orders TEXT[]' +
-        //     ')'
-        // )
 
         const sampleProducts = products.map((product) => {
             return { ...product }
         })
+        // console.log(sampleProducts)
 
+        let product
+        for (const key of sampleProducts.keys()) {
+            product = sampleProducts[key]
+        }
+        console.log(product)
 
-        // await db.query(
-        //     'INSERT INTO users (name, email, photo)' +
-        //     'VALUES ($1)', [sampleProducts]
-        // )
-
-
-        // await db.query(
-        //     'INSERT INTO products (product_name, quantity, price)' +
-        //     'VALUES ($1, $2, $3)', [product_name, quantity, price]
-        // )
+        await importProduct()
+        await db.query(
+            'INSERT INTO products (' +
+            'name, image, brand, category,' +
+            'description, price, status, payment_type)' +
+            'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+            [
+                product.name,
+                product.image,
+                product.brand,
+                product.category,
+                product.description,
+                product.price,
+                product.status,
+                product.payment_type,
+            ]
+        )
 
         // await Product.insertMany(sampleProducts);
 

@@ -4,7 +4,7 @@ const keys = require("../config/keys")
 
 const pay = mongoose.model("Pay")
 const subscriptions = mongoose.model("Subscriptions")
-const orders = mongoose.model("Orders")
+// const orders = mongoose.model("Orders")
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
@@ -21,12 +21,12 @@ module.exports = app => {
                 }
             })
 
-            const ordersDoc = await orders.findOne({
-                user: user
-            });
+            // const ordersDoc = await orders.findOne({
+            //     user: user
+            // });
 
-            if (ordersDoc) res.json(ordersDoc);
-            else res.status(404).json({ message: "Order not found" });
+            // if (ordersDoc) res.json(ordersDoc);
+            // else res.status(404).json({ message: "Order not found" });
         } else {
             res.sendStatus(403)
         }
@@ -164,26 +164,26 @@ module.exports = app => {
                     done(null, order)
                 })
 
-            new orders({
-                paymentID: req.body.paymentID,
-                subscriptionID: subscription.id,
-                product: {
-                    productID: req.body.product._id,
-                    productName: req.body.product.name,
-                    productBrand: req.body.product.brand,
-                    productCategory: req.body.product.category,
-                    price: req.body.product.price,
-                    payment_type: req.body.product.payment_type
-                },
-                id_user: user.id,
-                paymentType: req.body.paymentType,
-                status: req.body.status,
-                paymentAmount: req.body.product.price,
-                createdAt: Date.now()
-            }).save()
-                .then((order) => {
-                    done(null, order)
-                })
+            // new orders({
+            //     paymentID: req.body.paymentID,
+            //     subscriptionID: subscription.id,
+            //     product: {
+            //         productID: req.body.product._id,
+            //         productName: req.body.product.name,
+            //         productBrand: req.body.product.brand,
+            //         productCategory: req.body.product.category,
+            //         price: req.body.product.price,
+            //         payment_type: req.body.product.payment_type
+            //     },
+            //     id_user: user.id,
+            //     paymentType: req.body.paymentType,
+            //     status: req.body.status,
+            //     paymentAmount: req.body.product.price,
+            //     createdAt: Date.now()
+            // }).save()
+            //     .then((order) => {
+            //         done(null, order)
+            //     })
         }
     })
 
@@ -201,44 +201,44 @@ module.exports = app => {
 
             if (!!req.params.id)
             {
-                orders.findOne({ paymentID: req.params.id }, async (err, data) => {
-                    if (err) {
-                        res.status(403).send({ message: err })
-                    } else {
-                        if (JSON.stringify(user.id) === JSON.stringify(data.id_user))
-                        {
-                            try {
-                                await stripe.subscriptions.update(data.subscriptionID, {
-                                    cancel_at_period_end: true
-                                })
-
-                                orders.updateOne({ paymentID: req.params.id }, {
-                                    $set: { status: 'Cancel subscription' }
-                                }, (err,) => {
-                                    if (err) {
-                                        console.log(err)
-                                    }
-                                })
-
-                                orders.find({
-                                    paymentID: req.params.id
-                                }, (err, data) =>{
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        res.json(data);
-                                    }
-                                });
-                            } catch (err) {
-                                console.log(err)
-                                res.status(422).json({ message: 'The subscription has already been deleted or is not active' })
-                            }
-                        } else {
-                            console.log('Users dont match!')
-                            res.status(403).json({ message: 'Users dont match!' })
-                        }
-                    }
-                })
+                // orders.findOne({ paymentID: req.params.id }, async (err, data) => {
+                //     if (err) {
+                //         res.status(403).send({ message: err })
+                //     } else {
+                //         if (JSON.stringify(user.id) === JSON.stringify(data.id_user))
+                //         {
+                //             try {
+                //                 await stripe.subscriptions.update(data.subscriptionID, {
+                //                     cancel_at_period_end: true
+                //                 })
+                //
+                //                 orders.updateOne({ paymentID: req.params.id }, {
+                //                     $set: { status: 'Cancel subscription' }
+                //                 }, (err,) => {
+                //                     if (err) {
+                //                         console.log(err)
+                //                     }
+                //                 })
+                //
+                //                 orders.find({
+                //                     paymentID: req.params.id
+                //                 }, (err, data) =>{
+                //                     if (err) {
+                //                         console.log(err)
+                //                     } else {
+                //                         res.json(data);
+                //                     }
+                //                 });
+                //             } catch (err) {
+                //                 console.log(err)
+                //                 res.status(422).json({ message: 'The subscription has already been deleted or is not active' })
+                //             }
+                //         } else {
+                //             console.log('Users dont match!')
+                //             res.status(403).json({ message: 'Users dont match!' })
+                //         }
+                //     }
+                // })
             } else {
                 res.status(404).send({ message: 'PaymentID not found!' })
             }
@@ -259,23 +259,23 @@ module.exports = app => {
                 }
             })
 
-            orders.updateOne({ paymentID: req.params.id }, {
-                $set: { status: 'Cancel subscription' }
-            }, (err,) => {
-                if (err) {
-                    console.log(err)
-                }
-            })
-
-            orders.find({
-                user: user
-            }, (err, data) =>{
-                if (err) {
-                    console.log(err)
-                } else {
-                    res.json(data);
-                }
-            });
+            // orders.updateOne({ paymentID: req.params.id }, {
+            //     $set: { status: 'Cancel subscription' }
+            // }, (err,) => {
+            //     if (err) {
+            //         console.log(err)
+            //     }
+            // })
+            //
+            // orders.find({
+            //     user: user
+            // }, (err, data) =>{
+            //     if (err) {
+            //         console.log(err)
+            //     } else {
+            //         res.json(data);
+            //     }
+            // });
         } else {
             res.sendStatus(403)
         }

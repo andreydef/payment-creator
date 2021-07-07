@@ -1,31 +1,17 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const db = require('../config/database')
 
-const UserSchema = new Schema({
-  id_user: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  photo: {
-    type: String,
-    required: true,
-    default:
-      "https://res.cloudinary.com/geekysrm/image/upload/v1542221619/default-user.png"
-  },
-  orders: [{
-    type: Object,
-    required: true,
-    default: [],
-    ref: 'orders'
-  }]
-})
-
-module.exports = User = mongoose.model("users", UserSchema)
+module.exports = createUser = async () => {
+  await db.query(
+      'CREATE TABLE IF NOT EXISTS users (' +
+      'id VARCHAR(50) PRIMARY KEY,' +
+      'email VARCHAR(50) NOT NULL,' +
+      'verified_email BOOLEAN NOT NULL,' +
+      'name VARCHAR(50) NOT NULL,' +
+      'given_name VARCHAR(50) NOT NULL,' +
+      'family_name VARCHAR(50) NOT NULL, ' +
+      'picture VARCHAR(150),' +
+      'locale VARCHAR(5) NOT NULL,' +
+      'orders VARCHAR(150) ARRAY' +
+      ')'
+  )
+}

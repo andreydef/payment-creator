@@ -6,11 +6,11 @@ const PaySchema = new Schema({
         type: String,
         required: true,
     },
-    user: [{
-        type: Object,
-        required: true,
-        ref: 'users'
-    }],
+    // user: [{
+    //     type: Object,
+    //     required: true,
+    //     ref: 'users'
+    // }],
     status: {
         type: String,
         required: false

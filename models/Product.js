@@ -1,43 +1,17 @@
-const mongoose = require("mongoose")
+const db = require('../config/database')
 
-const productSchema = mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: true,
-        },
-        image: {
-            type: String,
-            required: true,
-        },
-        brand: {
-            type: String,
-            required: true,
-        },
-        category: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        },
-        price: {
-            type: Number,
-            required: true,
-            default: 0,
-        },
-        status: {
-            type: String,
-            required: true
-        },
-        payment_type: {
-            type: String,
-            required: true
-        }
-    },
-    { timestamps: true }
-);
-
-module.exports = Products = mongoose.model("product", productSchema)
-
+module.exports = importProduct = async () => {
+    await db.query(
+        'CREATE TABLE IF NOT EXISTS products (' +
+        'id SERIAL PRIMARY KEY,' +
+        'name VARCHAR(50) NOT NULL,' +
+        'image VARCHAR(50) NOT NULL,' +
+        'brand VARCHAR(50) NOT NULL,' +
+        'category VARCHAR(50) NOT NULL,' +
+        'description VARCHAR(300) NOT NULL,' +
+        'price REAL NOT NULL,' +
+        'status VARCHAR(50) NOT NULL,' +
+        'payment_type VARCHAR(50)' +
+        ')'
+    )
+}

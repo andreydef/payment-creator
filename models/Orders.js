@@ -1,60 +1,45 @@
-const mongoose = require("mongoose")
+const db = require('../config/database')
 
-const ordersSchema = mongoose.Schema(
-    {
-        paymentID: {
-          type: String,
-          required: true
-        },
-        subscriptionID: {
-            type: String,
-            required: false
-        },
-        product: {
-            productID: {
-                type: String,
-                required: true
-            },
-            productName: {
-                type: String,
-                required: true
-            },
-            productBrand: {
-                type: String,
-                required: true,
-            },
-            productCategory: {
-                type: String,
-                required: true,
-            },
-            price: {
-                type: Number,
-                required: true,
-                default: 0
-            },
-        },
-        id_user: {
-            type: String,
-            required: true
-        },
-        paymentType: {
-            type: String,
-            required: true
-        },
-        status: {
-            type: String,
-            required: true
-        },
-        paymentAmount: {
-            type: Number,
-            required: true
-        },
-        createdAt: {
-            type: Date,
-            required: true
-        }
-    },
-    { timestamps: true }
-);
+module.exports = createOrder = async () => {
+    await db.query(
+        'CREATE TABLE IF NOT EXISTS orders (' +
+        'paymentID VARCHAR(50) PRIMARY KEY,' +
+        'subscriptionID VARCHAR(50) NOT NULL,' +
+        'id_user VARCHAR(50) NOT NULL,' +
+        'paymentType VARCHAR(50) NOT NULL,' +
+        'status VARCHAR(50) NOT NULL,' +
+        'paymentAmount INTEGER NOT NULL, ' +
+        'products VARCHAR(150) ARRAY NULL' +
+        'createdAt VARCHAR(50)' +
+        ')'
+    )
+}
 
-module.exports = Orders = mongoose.model("Orders", ordersSchema)
+// const ordersSchema = mongoose.Schema(
+//     {
+//         product: {
+//             productID: {
+//                 type: String,
+//                 required: true
+//             },
+//             productName: {
+//                 type: String,
+//                 required: true
+//             },
+//             productBrand: {
+//                 type: String,
+//                 required: true,
+//             },
+//             productCategory: {
+//                 type: String,
+//                 required: true,
+//             },
+//             price: {
+//                 type: Number,
+//                 required: true,
+//                 default: 0
+//             },
+//         },
+//     },
+//     { timestamps: true }
+// )

@@ -1,5 +1,4 @@
 const express = require("express")
-const mongoose = require("mongoose")
 const cookieSession = require("cookie-session")
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser")
@@ -12,10 +11,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cookieParser());
 
-require("./models/User")
 require("./models/Pay")
 require("./models/Subscriptions")
-require("./models/Orders")
 
 app.use(cors({
     origin: keys.SERVER_ROOT_URI,

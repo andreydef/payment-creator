@@ -23,7 +23,12 @@ const ProductScreen = ({ match }) => {
     useEffect(() => {
         const fetchProduct = async () => {
             const { data } = await axios.get(`/api/products/${match.params.id}`);
-            setProduct(data);
+
+            let product
+            for (const key of data.keys()) {
+                product = data[key]
+            }
+            setProduct(product);
         };
         fetchProduct();
 
@@ -40,7 +45,7 @@ const ProductScreen = ({ match }) => {
                 <div>
                     <ListGroup.Item className='paypal'>
                         <p>PayPal</p>
-                        <PayPalPay user={profile.emails} amount={product.price} product={product} />
+                        <PayPalPay user={profile.email} amount={product.price} product={product} />
                     </ListGroup.Item>
                     <ListGroup.Item className='stripe'>
                         <Elements stripe={stripePromise}>
@@ -94,7 +99,7 @@ const ProductScreen = ({ match }) => {
 
     return (
         <>
-            <Link className="btn btn-dark my-3 ml-3" to="/products">
+            <Link className="btn btn-dark my-3 ml-3" to="/">
                 Go Back
             </Link>
             <Row>
