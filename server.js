@@ -29,16 +29,16 @@ app.use(
   })
 )
 
-const db = keys.mongoURI
-mongoose
-  .connect(db, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: true,
-      useCreateIndex: true
-  })
-  .then(() => console.log("MongoDB connected successfully!"))
-  .catch(err => console.log(err))
+// const db = keys.mongoURI
+// mongoose
+//   .connect(db, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//       useFindAndModify: true,
+//       useCreateIndex: true
+//   })
+//   .then(() => console.log("MongoDB connected successfully!"))
+//   .catch(err => console.log(err))
 
 require("./routes/auth")(app)
 require("./routes/product")(app)

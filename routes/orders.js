@@ -58,22 +58,22 @@ module.exports = app => {
                     }
                 })
 
-                orders.find({
-                    id_user: user.id
-                }, (err, data) =>{
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        UserModel.updateOne({ id_user: user.id }, {
-                            $set: { orders: data }
-                        }, (err,) => {
-                            if (err) {
-                                console.log(err)
-                            }
-                        })
-                        res.json(data)
-                    }
-                })
+                // orders.find({
+                //     id_user: user.id
+                // }, (err, data) =>{
+                //     if (err) {
+                //         console.log(err)
+                //     } else {
+                //         UserModel.updateOne({ id_user: user.id }, {
+                //             $set: { orders: data }
+                //         }, (err,) => {
+                //             if (err) {
+                //                 console.log(err)
+                //             }
+                //         })
+                //         res.json(data)
+                //     }
+                // })
             } else {
                 res.sendStatus(403)
             }
