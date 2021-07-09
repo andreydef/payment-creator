@@ -1,36 +1,35 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const db = require('../config/database')
 
-const SubscriptionsSchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-    },
-    subscriptionID: {
-        type: String,
-        required: true
-    },
-    // user: [{
-    //     type: Object,
-    //     required: true,
-    //     ref: 'users'
-    // }],
-    customer: {
-        type: String,
-        required: false,
-    },
-    products: [{
-        type: Object,
-        required: true
-    }],
-    type: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        required: true
-    }
-})
+module.exports = createSubscribe = async () => {
+    await db.query(
+        'CREATE TABLE IF NOT EXISTS subscribe (' +
+        'id VARCHAR(50) PRIMARY KEY NOT NULL,' +
+        'subscriptionID VARCHAR(50),' +
+        'customer VARCHAR(50),' +
+        'email VARCHAR(50),' +
+        'type VARCHAR(50) NOT NULL,' +
+        'createdAt VARCHAR(50) NOT NULL' +
+        ')'
+    )
+}
 
-module.exports = Subscriptions = mongoose.model("Subscriptions", SubscriptionsSchema)
+
+// const SubscriptionsSchema = new Schema({
+//     // user: [{
+//     //     type: Object,
+//     //     required: true,
+//     //     ref: 'users'
+//     // }],
+//     // products: [{
+//     //     type: Object,
+//     //     required: true
+//     // }],
+//     type: {
+//         type: String,
+//         required: true
+//     },
+//     createdAt: {
+//         type: Date,
+//         required: true
+//     }
+// })

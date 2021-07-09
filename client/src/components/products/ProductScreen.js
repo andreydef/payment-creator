@@ -60,7 +60,7 @@ const ProductScreen = ({ match }) => {
                 <div>
                     <ListGroup.Item className='paypal'>
                         <p>PayPal</p>
-                        <PayPalSubscribe product={product} />
+                        <PayPalSubscribe email={profile.email} product={product} />
                     </ListGroup.Item>
                     <ListGroup.Item className='stripe'>
                         <p>Stripe</p>

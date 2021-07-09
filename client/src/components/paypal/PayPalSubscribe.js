@@ -5,7 +5,7 @@ import { PayPalButton } from "react-paypal-button-v2"
 
 import './PayPal.css'
 
-const PayPalSubscribe = ({ product }) => {
+const PayPalSubscribe = ({ email, product }) => {
     const [isLoaded, setIsLoaded] = useState(false)
 
     const paypalSubscribe = (data, actions) => {
@@ -46,6 +46,7 @@ const PayPalSubscribe = ({ product }) => {
             body: JSON.stringify({
                 orderID: data.orderID,
                 subscriptionID: data.subscriptionID,
+                user_email: email,
                 product: product,
                 type: 'paypal'
             })

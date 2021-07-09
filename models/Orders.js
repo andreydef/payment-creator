@@ -9,7 +9,7 @@ module.exports = createOrder = async () => {
         'paymentType VARCHAR(50) NOT NULL,' +
         'status VARCHAR(50) NOT NULL,' +
         'paymentAmount INTEGER NOT NULL, ' +
-        'products VARCHAR(150) ARRAY NULL' +
+        'products VARCHAR(150) ARRAY,' +
         'createdAt VARCHAR(50)' +
         ')'
     )

@@ -34,6 +34,7 @@ const PayPalPay = ({ amount, product }) => {
             },
             body: JSON.stringify({
                 orderID: data.orderID,
+                amount: amount,
                 payer: details.payer,
                 product: product,
                 type: 'paypal'

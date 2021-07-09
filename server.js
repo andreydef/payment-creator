@@ -11,9 +11,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cookieParser());
 
-require("./models/Pay")
-require("./models/Subscriptions")
-
 app.use(cors({
     origin: keys.SERVER_ROOT_URI,
     credentials: true

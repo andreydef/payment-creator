@@ -1,48 +1,30 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const db = require('../config/database')
 
-const PaySchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-    },
-    // user: [{
-    //     type: Object,
-    //     required: true,
-    //     ref: 'users'
-    // }],
-    status: {
-        type: String,
-        required: false
-    },
-    payer: {
-        type: Object,
-        required: false
-    },
-    amount: {
-        type: Number,
-        required: false
-    },
-    email: {
-        type: String,
-        required: false
-    },
-    currency: {
-        type: String,
-        required: false
-    },
-    products: [{
-        type: Object,
-        required: true
-    }],
-    type: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        required: true
-    }
-})
+module.exports = createPay = async () => {
+    await db.query(
+        'CREATE TABLE IF NOT EXISTS pay (' +
+        'id VARCHAR(50) PRIMARY KEY NOT NULL,' +
+        'status VARCHAR(50) NOT NULL,' +
+        'amount REAL,' +
+        'email VARCHAR(50),' +
+        'type VARCHAR(50) NOT NULL,' +
+        'createdAt VARCHAR(50) NOT NULL' +
+        ')'
+    )
+}
 
-module.exports = Pay = mongoose.model("Pay", PaySchema)
+// const PaySchema = new Schema({
+//     // user: [{
+//     //     type: Object,
+//     //     required: true,
+//     //     ref: 'users'
+//     // }],
+//     // payer: {
+//     //     type: Object,
+//     //     required: false
+//     // },
+//     // products: [{
+//     //     type: Object,
+//     //     required: true
+//     // }],
+// })

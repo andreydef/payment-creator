@@ -22,8 +22,7 @@ module.exports = app => {
             await db.query(
                 'INSERT INTO orders (' +
                 'paymentID, subscriptionID, id_user, ' +
-                'paymentType, status,' +
-                'paymentAmount, createdAt)' +
+                'paymentType, status, paymentAmount, createdAt)' +
                 'VALUES ($1, $2, $3, $4, $5, $6, $7)',
                 [
                     req.body.paymentID,
@@ -64,16 +63,20 @@ module.exports = app => {
     app.get("/api/orders",
         asyncHandler(async (req, res) => {
             if (req.cookies['auth_token']) {
-                const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`,
-                    function(err, decoded) {
-                    if (err) {
-                        return res.status(500).send({
-                            message: err.message
-                        })
-                    } else {
-                        return decoded
-                    }
-                })
+                // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`,
+                //     function(err, decoded) {
+                //     if (err) {
+                //         return res.status(500).send({
+                //             message: err.message
+                //         })
+                //     } else {
+                //         return decoded
+                //     }
+                // })
+
+                const { rows } = await db.query('SELECT * FROM orders')
+
+                res.json(rows)
 
                 // orders.find({
                 //     id_user: user.id

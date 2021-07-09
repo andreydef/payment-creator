@@ -2,24 +2,25 @@ const mongoose = require("mongoose")
 const jwt = require('jsonwebtoken')
 const keys = require("../config/keys")
 
-const pay = mongoose.model("Pay")
-const subscriptions = mongoose.model("Subscriptions")
-// const orders = mongoose.model("Orders")
+const createPay = require('../models/Pay')
+const createSubscribe = require('../models/Subscriptions')
+
+const db = require('../config/database')
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
 module.exports = app => {
     app.get("/api/subscribe/cancel", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-                if (err) {
-                    return res.status(500).send({
-                        message: err.message
-                    })
-                } else {
-                    return decoded
-                }
-            })
+            // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            //     if (err) {
+            //         return res.status(500).send({
+            //             message: err.message
+            //         })
+            //     } else {
+            //         return decoded
+            //     }
+            // })
 
             // const ordersDoc = await orders.findOne({
             //     user: user
@@ -32,32 +33,51 @@ module.exports = app => {
         }
     })
 
-    app.post("/api/pay", async (req, res, done) => {
+    app.post("/api/pay", async (req, res) => {
         const { email, amount, payment_method } = req.body
 
         if (req.cookies['auth_token']) {
-            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-                if (err) {
-                    return res.status(500).send({
-                        message: err.message
-                    })
-                } else {
-                    return decoded
-                }
-            })
+            // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            //     if (err) {
+            //         return res.status(500).send({
+            //             message: err.message
+            //         })
+            //     } else {
+            //         return decoded
+            //     }
+            // })
 
+            await createPay()
             if (req.body.type === 'paypal') {
-                new pay({
-                    id: req.body.orderID,
-                    user: user,
-                    payer: req.body.payer,
-                    products: req.body.product,
-                    type: req.body.type,
-                    createdAt: Date.now()
-                }).save()
-                    .then((order) => {
-                        done(null, order)
-                    })
+                const { email_address } = req.body.payer
+
+                await db.query(
+                    'INSERT INTO pay (' +
+                    'id, status, amount, email,' +
+                    'type, createdAt)' +
+                    'VALUES ($1, $2, $3, $4, $5, $6)',
+                    [
+                        req.body.orderID,
+                        'Active',
+                        amount,
+                        email_address,
+                        req.body.type,
+                        Date.now()
+                    ]
+                )
+
+
+                // new pay({
+                //     id: req.body.orderID,
+                //     user: user,
+                //     payer: req.body.payer,
+                //     products: req.body.product,
+                //     type: req.body.type,
+                //     createdAt: Date.now()
+                // }).save()
+                //     .then((order) => {
+                //         done(null, order)
+                //     })
             } else {
                 let stringAmount = amount.toString()
                 let numberAmount = parseFloat(stringAmount.replace('.', ''))
@@ -83,51 +103,82 @@ module.exports = app => {
                     paymentIntent.id,
                     { payment_method: 'pm_card_visa' }
                 )
+
+                await db.query(
+                    'INSERT INTO pay (' +
+                    'id, status, amount, email,' +
+                    'type, createdAt)' +
+                    'VALUES ($1, $2, $3, $4, $5, $6)',
+                    [
+                        req.body.payment_method,
+                        'Active',
+                        amount,
+                        paymentIntent.receipt_email,
+                        req.body.type,
+                        Date.now()
+                    ]
+                )
+
                 res.send({ client_secret: paymentIntent.client_secret })
 
-                new pay({
-                    id: req.body.payment_method,
-                    user: user,
-                    amount: amount,
-                    email: paymentIntent.receipt_email,
-                    currency: paymentIntent.currency,
-                    products: req.body.product,
-                    type: req.body.type,
-                    createdAt: Date.now()
-                }).save()
-                    .then((order) => {
-                        done(null, order)
-                    })
+                // new pay({
+                //     id: req.body.payment_method,
+                //     user: user,
+                //     amount: amount,
+                //     email: paymentIntent.receipt_email,
+                //     currency: paymentIntent.currency,
+                //     products: req.body.product,
+                //     type: req.body.type,
+                //     createdAt: Date.now()
+                // }).save()
+                //     .then((order) => {
+                //         done(null, order)
+                //     })
             }
         } else {
             res.sendStatus(403)
         }
     })
 
-    app.post("/api/subscribe", async (req, res, done) => {
+    app.post("/api/subscribe", async (req, res) => {
         const { user_email, payment_method } = req.body
-        const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-            if (err) {
-                return res.status(500).send({
-                    message: err.message
-                })
-            } else {
-                return decoded
-            }
-        })
+        // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+        //     if (err) {
+        //         return res.status(500).send({
+        //             message: err.message
+        //         })
+        //     } else {
+        //         return decoded
+        //     }
+        // })
 
+        await createSubscribe()
         if (req.body.type === 'paypal') {
-            new subscriptions({
-                id: req.body.orderID,
-                subscriptionID: req.body.subscriptionID,
-                user: user,
-                products: req.body.product,
-                type: req.body.type,
-                createdAt: Date.now()
-            }).save()
-                .then((order) => {
-                    done(null, order)
-                })
+            await db.query(
+                'INSERT INTO subscribe (' +
+                'id, subscriptionID, email,' +
+                'type, createdAt)' +
+                'VALUES ($1, $2, $3, $4, $5)',
+                [
+                    req.body.orderID,
+                    req.body.subscriptionID,
+                    user_email,
+                    req.body.type,
+                    Date.now()
+                ]
+            )
+
+            // new subscriptions({
+            //     id: req.body.orderID,
+            //     subscriptionID: req.body.subscriptionID,
+            //     user: user,
+            //     products: req.body.product,
+            //     type: req.body.type,
+            //     createdAt: Date.now()
+            // }).save()
+            //     .then((order) => {
+            //         done(null, order)
+            //     })
         } else {
             const customer = await stripe.customers.create({
                 payment_method: payment_method,
@@ -151,18 +202,33 @@ module.exports = app => {
                 status: status
             })
 
-            new subscriptions({
-                id: req.body.payment_method,
-                subscriptionID: subscription.id,
-                user: user,
-                customer: subscription.customer,
-                products: req.body.product,
-                type: req.body.type,
-                createdAt: Date.now()
-            }).save()
-                .then((order) => {
-                    done(null, order)
-                })
+            await db.query(
+                'INSERT INTO subscribe (' +
+                'id, subscriptionID, customer, email,' +
+                'type, createdAt)' +
+                'VALUES ($1, $2, $3, $4, $5, $6)',
+                [
+                    req.body.payment_method,
+                    subscription.id,
+                    subscription.customer,
+                    user_email,
+                    req.body.type,
+                    Date.now()
+                ]
+            )
+
+            // new subscriptions({
+            //     id: req.body.payment_method,
+            //     subscriptionID: subscription.id,
+            //     user: user,
+            //     customer: subscription.customer,
+            //     products: req.body.product,
+            //     type: req.body.type,
+            //     createdAt: Date.now()
+            // }).save()
+            //     .then((order) => {
+            //         done(null, order)
+            //     })
 
             // new orders({
             //     paymentID: req.body.paymentID,
@@ -249,15 +315,15 @@ module.exports = app => {
 
     app.delete("/api/paypal-subscribe/:id", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-                if (err) {
-                    return res.status(500).send({
-                        message: err.message
-                    })
-                } else {
-                    return decoded
-                }
-            })
+            // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            //     if (err) {
+            //         return res.status(500).send({
+            //             message: err.message
+            //         })
+            //     } else {
+            //         return decoded
+            //     }
+            // })
 
             // orders.updateOne({ paymentID: req.params.id }, {
             //     $set: { status: 'Cancel subscription' }
