@@ -46,7 +46,7 @@ const StripeSubscribe = ({ email, product }) => {
                     payment_method: result.paymentMethod.id,
                     user_email: email,
                     product: product,
-                    status: 'Subscribe',
+                    status: 'Active',
                     type: 'stripe'
                 })
             });

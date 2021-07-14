@@ -6,7 +6,7 @@ const db = require('../config/database')
 const createOrder = require('../models/Orders')
 
 module.exports = app => {
-    app.post("/api/create-order", async (req, res, done) => {
+    app.post("/api/create-order", async (req, res) => {
         if (req.cookies['auth_token']) {
             const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
                 if (err) {

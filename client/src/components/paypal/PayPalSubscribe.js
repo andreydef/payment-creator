@@ -28,7 +28,7 @@ const PayPalSubscribe = ({ email, product }) => {
                 paymentID: data.orderID,
                 subscriptionID: data.subscriptionID,
                 product: product,
-                status: 'Subscribe',
+                status: 'Active',
                 paymentType: 'PayPal Subscribe',
             })
         }).then(function(res) {

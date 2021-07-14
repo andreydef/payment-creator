@@ -3,14 +3,14 @@ const db = require('../config/database')
 module.exports = createOrder = async () => {
     await db.query(
         'CREATE TABLE IF NOT EXISTS orders (' +
-        'paymentID VARCHAR(50) PRIMARY KEY,' +
-        'subscriptionID VARCHAR(50) NOT NULL,' +
-        'id_user VARCHAR(50) NOT NULL,' +
-        'paymentType VARCHAR(50) NOT NULL,' +
-        'status VARCHAR(50) NOT NULL,' +
-        'paymentAmount INTEGER NOT NULL, ' +
+        'paymentID VARCHAR(100) PRIMARY KEY,' +
+        'subscriptionID VARCHAR(100),' +
+        'id_user VARCHAR(100) NOT NULL,' +
+        'paymentType VARCHAR(100) NOT NULL,' +
+        'status VARCHAR(100),' +
+        'paymentAmount DECIMAL NOT NULL, ' +
         'products VARCHAR(150) ARRAY,' +
-        'createdAt VARCHAR(50)' +
+        'createdAt VARCHAR(50) NOT NULL' +
         ')'
     )
 }

@@ -17,8 +17,8 @@ const PayPalPay = ({ amount, product }) => {
             body: JSON.stringify({
                 paymentID: data.orderID,
                 product: product,
-                status: 'Payment',
-                paymentType: 'PayPal'
+                status: 'payment',
+                paymentType: 'paypal'
             })
         }).then(function(res) {
             setIsLoaded(true)

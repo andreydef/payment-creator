@@ -6,6 +6,7 @@ const createPay = require('../models/Pay')
 const createSubscribe = require('../models/Subscriptions')
 
 const db = require('../config/database')
+const createOrder = require('../models/Orders')
 
 const stripe = require('stripe')('sk_test_51IzoTdK5elvk04pSqGoMAGLAtpleSjLYmdTbmNSxu44PTJ6TPLvOjj8SRdmiUyRvWciA4CTxHlH8mA2ViGNJF55t00k4HCCwis');
 
@@ -37,15 +38,15 @@ module.exports = app => {
         const { email, amount, payment_method } = req.body
 
         if (req.cookies['auth_token']) {
-            // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-            //     if (err) {
-            //         return res.status(500).send({
-            //             message: err.message
-            //         })
-            //     } else {
-            //         return decoded
-            //     }
-            // })
+            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+                if (err) {
+                    return res.status(500).send({
+                        message: err.message
+                    })
+                } else {
+                    return decoded
+                }
+            })
 
             await createPay()
             if (req.body.type === 'paypal') {
@@ -66,6 +67,20 @@ module.exports = app => {
                     ]
                 )
 
+                await createOrder()
+                await db.query(
+                    'INSERT INTO orders (' +
+                    'paymentID, id_user, ' +
+                    'paymentType, paymentAmount, createdAt)' +
+                    'VALUES ($1, $2, $3, $4, $5)',
+                    [
+                        req.body.orderID,
+                        user.id,
+                        req.body.type,
+                        amount,
+                        Date.now(),
+                    ]
+                )
 
                 // new pay({
                 //     id: req.body.orderID,
@@ -78,7 +93,7 @@ module.exports = app => {
                 //     .then((order) => {
                 //         done(null, order)
                 //     })
-            } else {
+            } else if (req.body.type === 'stripe') {
                 let stringAmount = amount.toString()
                 let numberAmount = parseFloat(stringAmount.replace('.', ''))
 
@@ -119,6 +134,21 @@ module.exports = app => {
                     ]
                 )
 
+                await createOrder()
+                await db.query(
+                    'INSERT INTO orders (' +
+                    'paymentID, id_user, ' +
+                    'paymentType, paymentAmount, createdAt)' +
+                    'VALUES ($1, $2, $3, $4, $5)',
+                    [
+                        req.body.payment_method,
+                        user.id,
+                        req.body.type,
+                        amount,
+                        Date.now(),
+                    ]
+                )
+
                 res.send({ client_secret: paymentIntent.client_secret })
 
                 // new pay({
@@ -134,6 +164,8 @@ module.exports = app => {
                 //     .then((order) => {
                 //         done(null, order)
                 //     })
+            } else {
+                res.status(403).send({ message: 'Payment type dont exist!' })
             }
         } else {
             res.sendStatus(403)
@@ -142,15 +174,15 @@ module.exports = app => {
 
     app.post("/api/subscribe", async (req, res) => {
         const { user_email, payment_method } = req.body
-        // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-        //     if (err) {
-        //         return res.status(500).send({
-        //             message: err.message
-        //         })
-        //     } else {
-        //         return decoded
-        //     }
-        // })
+        const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            if (err) {
+                return res.status(500).send({
+                    message: err.message
+                })
+            } else {
+                return decoded
+            }
+        })
 
         await createSubscribe()
         if (req.body.type === 'paypal') {
@@ -214,6 +246,23 @@ module.exports = app => {
                     user_email,
                     req.body.type,
                     Date.now()
+                ]
+            )
+
+            await createOrder()
+            await db.query(
+                'INSERT INTO orders (' +
+                'paymentID, subscriptionID, id_user, ' +
+                'paymentType, status, paymentAmount, createdAt)' +
+                'VALUES ($1, $2, $3, $4, $5, $6, $7)',
+                [
+                    req.body.paymentID,
+                    subscription.id,
+                    user.id,
+                    req.body.paymentType,
+                    req.body.status,
+                    req.body.product.price,
+                    Date.now(),
                 ]
             )
 

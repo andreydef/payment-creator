@@ -7,7 +7,7 @@ import "./Profile.css"
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import Loader from "react-loader-spinner";
-import moment from "moment";
+// import moment from "moment";
 
 const clientIdAndSecret = "AZRtameGwLo6f_zKc73fnXRoR8zZX-dFzlHci18FIXRUlMY2rtdpZVPnXyYx5QhMDcZ0sE9tjDuDKSRR:EFNN_2R8YDxUuo2z-OufYMB1B2VTFRoAaWwIRh9Nc16yeQnRxMz16P-RF5gb0ZIxcfofzXY9T3qKMfsM";
 const base64 = Buffer.from(clientIdAndSecret).toString('base64')
@@ -193,26 +193,26 @@ class Profile extends Component {
                                 <th>Created at</th>
                                 <th>Status</th>
                             </tr>
-                            { orders !== [] ? (
-                                orders.map(order => (
-                                    <>
-                                        <tr key={order.paymentID}>
-                                            <td>
-                                                <a href={`/product/${order.product.productID}`}>
-                                                    {order.product.productName}
-                                                </a>
-                                            </td>
-                                            <td>{order.product.productBrand}</td>
-                                            <td>{order.product.productCategory}</td>
-                                            <td>{order.paymentAmount}</td>
-                                            <td>{order.paymentType}</td>
-                                            <td>{moment(order.createdAt)
-                                                .format('DD MMM, YYYY - HH:mm')}</td>
-                                            { getSubscribeButton(order) }
-                                        </tr>
-                                    </>
-                                ))
-                            ) : <p>You don't have orders</p> }
+                            {/*{ orders !== [] ? (*/}
+                            {/*    orders.map(order => (*/}
+                            {/*        <>*/}
+                            {/*            <tr key={order.paymentID}>*/}
+                            {/*                <td>*/}
+                            {/*                    <a href={`/product/${order.product.productID}`}>*/}
+                            {/*                        {order.product.productName}*/}
+                            {/*                    </a>*/}
+                            {/*                </td>*/}
+                            {/*                <td>{order.product.productBrand}</td>*/}
+                            {/*                <td>{order.product.productCategory}</td>*/}
+                            {/*                <td>{order.paymentAmount}</td>*/}
+                            {/*                <td>{order.paymentType}</td>*/}
+                            {/*                <td>{moment(order.createdAt)*/}
+                            {/*                    .format('DD MMM, YYYY - HH:mm')}</td>*/}
+                            {/*                { getSubscribeButton(order) }*/}
+                            {/*            </tr>*/}
+                            {/*        </>*/}
+                            {/*    ))*/}
+                            {/*) : <p>You don't have orders</p> }*/}
                             </tbody>
                         </table>
                     </center>
