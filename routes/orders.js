@@ -63,18 +63,25 @@ module.exports = app => {
     app.get("/api/orders",
         asyncHandler(async (req, res) => {
             if (req.cookies['auth_token']) {
-                // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`,
-                //     function(err, decoded) {
-                //     if (err) {
-                //         return res.status(500).send({
-                //             message: err.message
-                //         })
-                //     } else {
-                //         return decoded
-                //     }
-                // })
+                const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`,
+                    function(err, decoded) {
+                    if (err) {
+                        return res.status(500).send({
+                            message: err.message
+                        })
+                    } else {
+                        return decoded
+                    }
+                })
 
-                const { rows } = await db.query('SELECT * FROM orders')
+                const { rows } = await db.query('SELECT * FROM orders ' +
+                    'WHERE id_user = $1', [user.id], (err, doc) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        return { ...doc }
+                    }
+                })
 
                 res.json(rows)
 

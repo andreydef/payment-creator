@@ -304,15 +304,15 @@ module.exports = app => {
 
     app.delete("/api/stripe-subscribe/:id", async (req, res) => {
         if (req.cookies['auth_token']) {
-            const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
-                if (err) {
-                    return res.status(500).send({
-                        message: err.message
-                    })
-                } else {
-                    return decoded
-                }
-            })
+            // const user = await jwt.verify(req.cookies['auth_token'], `${keys.JWT_SECRET}`, function(err, decoded) {
+            //     if (err) {
+            //         return res.status(500).send({
+            //             message: err.message
+            //         })
+            //     } else {
+            //         return decoded
+            //     }
+            // })
 
             if (!!req.params.id)
             {
