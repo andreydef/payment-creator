@@ -3,7 +3,7 @@ const db = require('../config/database')
 module.exports = importProduct = async () => {
     await db.query(
         'CREATE TABLE IF NOT EXISTS products (' +
-        'id SERIAL PRIMARY KEY,' +
+        'id SERIAL PRIMARY KEY NOT NULL,' +
         'name VARCHAR(50) NOT NULL,' +
         'image VARCHAR(50) NOT NULL,' +
         'brand VARCHAR(50) NOT NULL,' +
